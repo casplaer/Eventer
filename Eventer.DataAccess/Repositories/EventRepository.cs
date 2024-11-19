@@ -1,0 +1,54 @@
+﻿using Eventer.Application.Contracts;
+using Eventer.Application.Interfaces.Repositories;
+using Eventer.Domain.Models;
+using Eventer.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+
+namespace Eventer.Infrastructure.Repositories
+{
+    public class EventRepository : Repository<Event>, IEventRepository
+    {
+        private readonly EventsDbContext _context;
+
+        public EventRepository(EventsDbContext context) : base(context)
+        {
+            _context = context;
+        }
+
+        public async Task<IEnumerable<Event>> GetFilteredEventsAsync(GetEventsRequest filter)
+        {
+            EventCategory? tmpCategory = null;
+
+            if (filter.Category != null && filter.Category.Id != Guid.Empty)
+            {
+                tmpCategory = _context.Categories.FirstOrDefault(c => c.Id == filter.Category.Id);
+            }
+            else if (filter.Category != null && !string.IsNullOrEmpty(filter.Category.Name))
+            {
+                tmpCategory = _context.Categories.FirstOrDefault(c => c.Name == filter.Category.Name);
+            }
+
+            var query = _context.Events.AsQueryable();
+
+            // Фильтрация по дате
+            if (filter.Date.HasValue)
+            {
+                query = query.Where(e => e.StartDate == filter.Date.Value);
+            }
+
+            // Фильтрация по месту проведения
+            if (!string.IsNullOrEmpty(filter.Venue))
+            {
+                query = query.Where(e => e.Venue.Contains(filter.Venue));
+            }
+
+            // Фильтрация по категории
+            if (filter.Category != null)
+            {
+                query = query.Where(e => e.Category == tmpCategory);
+            }
+
+            return await query.ToListAsync();
+        }
+    }
+}

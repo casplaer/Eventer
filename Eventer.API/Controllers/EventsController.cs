@@ -1,0 +1,45 @@
+﻿using Eventer.Application.Contracts;
+using Eventer.Application.Interfaces.Services;
+using Eventer.Domain.Models;
+using Eventer.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Eventer.API.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class EventsController : Controller
+    {
+        private readonly IEventService _eventService;
+
+        public EventsController(IEventService eventService)
+        {
+            _eventService = eventService;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody]CreateEventRequest request)
+        {
+            await _eventService.AddEventAsync(request);
+
+            return Ok();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Get([FromQuery]GetEventsRequest request)
+        {
+            var eventDtos = (await _eventService.GetFilteredEventsAsync(request))
+                                .Select(e => new EventDTO(e.Id, e.Title,
+                                                          e.Description, e.StartDate,
+                                                          e.StartTime, e.Venue,
+                                                          e.Latitude, e.Longitude,
+                                                          e.Category,
+                                                          e.MaxParticipants))
+                                .ToList();
+
+
+            return Ok(new GetEventsResponse(eventDtos));
+        }
+    }
+}
