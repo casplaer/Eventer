@@ -15,6 +15,7 @@ namespace Eventer.Application.Interfaces.Services
         Task<IEnumerable<Event>> GetEventByTitleAsync(string title);
         Task<IEnumerable<Event>> GetFilteredEventsAsync(GetEventsRequest request);
         Task AddEventAsync(CreateEventRequest request);
-        Task DeleteEventAsync(Guid id);
+        Task UpdateEventAsync(UpdateEventRequest request);
+        Task<bool> DeleteEventAsync(Guid id);
     }
 }

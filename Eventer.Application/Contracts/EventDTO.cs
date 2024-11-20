@@ -12,5 +12,6 @@ namespace Eventer.Application.Contracts
         double Latitude,
         double Longitude,
         EventCategory Category,
-        int MaxParticipants);
+        int MaxParticipants,
+        string ImageUrl);
 }

@@ -5,6 +5,8 @@ using Eventer.Domain.Models;
 using Eventer.Infrastructure.Data;
 using Eventer.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Any;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -12,7 +14,22 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Eventer WEB API",
+        Version = "v1",
+        Description = "Данное API является тестовым заданием на позицию .NET Intern.",
+    });
+
+    options.MapType<DateOnly>(() => new OpenApiSchema
+    {
+        Type = "string",
+        Format = "date",
+        Example = new OpenApiString("2024-11-19")
+    });
+});
 
 //База данных
 builder.Services.AddDbContext<EventsDbContext>(options=>

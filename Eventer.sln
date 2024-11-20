@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eventer.API", "Eventer.API\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eventer.Domain", "Eventer.Domain\Eventer.Domain.csproj", "{79C5AB4B-BFCE-4086-A289-17109763495A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eventer.Infrastructure", "Eventer.DataAccess\Eventer.Infrastructure.csproj", "{4E58FB12-BD1B-4110-AE6A-824A8887D521}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eventer.Infrastructure", "Eventer.Infrastructure\Eventer.Infrastructure.csproj", "{4E58FB12-BD1B-4110-AE6A-824A8887D521}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eventer.Application", "Eventer.Application\Eventer.Application.csproj", "{0332302F-FFD6-46F7-AFB4-6A158CBE84CE}"
 EndProject

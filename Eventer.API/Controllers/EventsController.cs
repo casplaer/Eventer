@@ -1,8 +1,5 @@
 ﻿using Eventer.Application.Contracts;
 using Eventer.Application.Interfaces.Services;
-using Eventer.Domain.Models;
-using Eventer.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Eventer.API.Controllers
@@ -19,7 +16,7 @@ namespace Eventer.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody]CreateEventRequest request)
+        public async Task<IActionResult> CreateEvent([FromBody]CreateEventRequest request)
         {
             await _eventService.AddEventAsync(request);
 
@@ -27,7 +24,7 @@ namespace Eventer.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery]GetEventsRequest request)
+        public async Task<IActionResult> GetEvents([FromQuery]GetEventsRequest request)
         {
             var eventDtos = (await _eventService.GetFilteredEventsAsync(request))
                                 .Select(e => new EventDTO(e.Id, e.Title,
@@ -35,11 +32,33 @@ namespace Eventer.API.Controllers
                                                           e.StartTime, e.Venue,
                                                           e.Latitude, e.Longitude,
                                                           e.Category,
-                                                          e.MaxParticipants))
+                                                          e.MaxParticipants,
+                                                          e.ImageURL))
                                 .ToList();
 
 
             return Ok(new GetEventsResponse(eventDtos));
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateEvent([FromBody]UpdateEventRequest request)
+        {
+            await _eventService.UpdateEventAsync(request);
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteEvent(Guid id)
+        {
+            var isDeleted = await _eventService.DeleteEventAsync(id);
+
+            if (!isDeleted)
+            {
+                return NotFound($"Event with ID {id} not found.");
+            }
+
+            return NoContent();
         }
     }
 }
