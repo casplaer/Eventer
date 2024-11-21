@@ -8,9 +8,9 @@ namespace Eventer.Infrastructure.Repositories
 {
     public class EventRepository : Repository<Event>, IEventRepository
     {
-        private readonly EventsDbContext _context;
+        private readonly EventerDbContext _context;
 
-        public EventRepository(EventsDbContext context) : base(context)
+        public EventRepository(EventerDbContext context) : base(context)
         {
             _context = context;
         }

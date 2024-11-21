@@ -1,3 +1,4 @@
+using Eventer.Application.Interfaces.Auth;
 using Eventer.Application.Interfaces.Repositories;
 using Eventer.Application.Interfaces.Services;
 using Eventer.Application.Services;
@@ -39,7 +40,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 //База данных
-builder.Services.AddDbContext<EventsDbContext>(options=>
+builder.Services.AddDbContext<EventerDbContext>(options=>
     options.UseNpgsql(connectionString));
 
 //UnitOfWork и репозитории
@@ -47,10 +48,14 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));//Общая реализация репозитория
 builder.Services.AddScoped<IEventRepository, EventRepository>();//Репозиторий событий
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();//Репозиторий категорий
+builder.Services.AddScoped<IUserRepository, UserRepository>();//Репозиторий пользователей
 
 //Сервисы
 builder.Services.AddScoped<IEventService, EventService>();//Сервис для событий
 builder.Services.AddScoped<ICategoryService, CategoryService>();//Сервис для категорий
+builder.Services.AddScoped<IAuthService,  AuthService>();//Сервис для аутентификации
+
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();//Хэшер
 
 builder.Services.AddCors(options=>
 {
@@ -70,9 +75,10 @@ var services = scope.ServiceProvider;
 
 try
 {
-    var context = services.GetRequiredService<EventsDbContext>();
+    var context = services.GetRequiredService<EventerDbContext>();
+    var hasher = services.GetRequiredService<IPasswordHasher>();
     context.Database.Migrate();
-    DbInitializer.Initialize(context);
+    DbInitializer.Initialize(context, hasher);
 }
 catch (Exception ex)
 {

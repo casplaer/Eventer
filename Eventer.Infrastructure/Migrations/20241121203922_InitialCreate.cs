@@ -26,6 +26,20 @@ namespace Eventer.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    PasswordHash = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Events",
                 columns: table => new
                 {
@@ -63,7 +77,8 @@ namespace Eventer.Infrastructure.Migrations
                     DateOfBirth = table.Column<DateOnly>(type: "date", nullable: false),
                     EventId = table.Column<Guid>(type: "uuid", nullable: false),
                     RegistrationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ErrorMessage = table.Column<string>(type: "text", nullable: false)
+                    ErrorMessage = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -74,12 +89,22 @@ namespace Eventer.Infrastructure.Migrations
                         principalTable: "Events",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_EventRegistration_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_EventRegistration_EventId",
                 table: "EventRegistration",
                 column: "EventId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EventRegistration_UserId",
+                table: "EventRegistration",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Events_CategoryId",
@@ -95,6 +120,9 @@ namespace Eventer.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Events");
+
+            migrationBuilder.DropTable(
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Categories");

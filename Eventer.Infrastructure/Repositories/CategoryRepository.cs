@@ -12,9 +12,9 @@ namespace Eventer.Infrastructure.Repositories
 {
     public class CategoryRepository : Repository<EventCategory>, ICategoryRepository
     {
-        private readonly EventsDbContext _context;
+        private readonly EventerDbContext _context;
 
-        public CategoryRepository(EventsDbContext context) : base(context)
+        public CategoryRepository(EventerDbContext context) : base(context)
         {
             _context = context;
         }

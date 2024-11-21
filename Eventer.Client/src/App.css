@@ -40,3 +40,13 @@
 .read-the-docs {
   color: #888;
 }
+
+.content {
+    margin-left: 0;
+    transition: margin-left 0.3s ease;
+}
+
+.sidebar-container.open ~ .content {
+    margin-left: 250px; 
+}
+

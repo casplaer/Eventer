@@ -1,13 +1,14 @@
 ﻿using Eventer.Application.Interfaces.Repositories;
+using Eventer.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace Eventer.Infrastructure.Repositories
 {
     public class Repository<T> : IRepository<T> where T : class
     {
-        protected readonly DbContext _context;
+        protected readonly EventerDbContext _context;
 
-        public Repository(DbContext context)
+        public Repository(EventerDbContext context)
         {
             _context = context;
         }

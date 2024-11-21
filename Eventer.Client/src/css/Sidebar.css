@@ -1,0 +1,89 @@
+.sidebar-container {
+    position: relative;
+    z-index: 10;
+}
+
+.hamburger {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 20;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.hamburger .line {
+    width: 30px;
+    height: 3px;
+    background-color: black;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.sidebar-container.open .hamburger .line:nth-child(1) {
+    transform: rotate(45deg) translate(6px, 5px);
+    width: 25px;
+    background-color: white;
+}
+
+.sidebar-container.open .hamburger .line:nth-child(2) {
+    opacity: 0;
+}
+
+.sidebar-container.open .hamburger .line:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -5px);
+    width: 25px;
+    background-color: white;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -300px;
+    width: 250px;
+    height: 100vh;
+    background-color: #222;
+    color: white;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+    padding: 70px 20px;
+    display: flex;
+    flex-direction: column;
+    transition: left 0.3s ease;
+    font-family: "Rubik", sans-serif;
+    text-align: left;
+}
+
+.sidebar-container.open .sidebar {
+    left: 0;
+}
+
+.sidebar-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%; 
+}
+
+.sidebar-links li {
+    margin: 10px 0;
+}
+
+.sidebar-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    transition: color 0.3s ease;
+}
+
+.sidebar-links a:hover {
+    color: #007bff;
+}
+
+.sidebar-links li:last-child {
+    margin-top: auto;
+    margin-bottom: 100px;
+}

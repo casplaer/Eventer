@@ -7,10 +7,9 @@ const EventsPage = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Функция для загрузки данных
         const fetchEvents = async () => {
             try {
-                const data = await getEvents(); // Вы можете передать параметры фильтра
+                const data = await getEvents();
                 setEvents(data); 
             } catch (error) {
                 console.error("Ошибка при загрузке событий:", error);

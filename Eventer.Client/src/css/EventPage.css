@@ -1,5 +1,5 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: "Rubik", sans-serif;
     margin: 0;
     padding: 0;
     background-color: #f9f9f9;
@@ -19,14 +19,12 @@ body {
     color: #222;
 }
 
-/* Сетка событий */
 .events-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
 }
 
-/* Карточка события */
 .event-card {
     background-color: #fff;
     border: 1px solid #ddd;
@@ -41,20 +39,17 @@ body {
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     }
 
-/* Заголовок события */
 .event-title {
     font-size: 1.5rem;
     color: #0056b3;
     margin-bottom: 10px;
 }
 
-/* Описание события */
 .event-description {
     font-size: 1rem;
     margin-bottom: 10px;
 }
 
-/* Детали события */
 .event-details {
     font-size: 0.9rem;
     margin: 5px 0;

@@ -1,16 +1,20 @@
-﻿using Eventer.Domain.Models;
+﻿using Eventer.Application.Interfaces.Auth;
+using Eventer.Domain.Models;
 using Eventer.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
 
 namespace Eventer.Infrastructure
 {
     public static class DbInitializer
     {
-        public static void Initialize(EventsDbContext context)
+        public static void Initialize(EventerDbContext context, IPasswordHasher hasher)
         {
             context.Database.EnsureCreated();
 
-            if(!context.Categories.Any())
+            var users = context.Users.ToList();  
+            context.Users.RemoveRange(users);   
+            context.SaveChanges();
+
+            if (!context.Categories.Any())
             {
                 var testCategories = new List<EventCategory>
                 {
@@ -32,70 +36,76 @@ namespace Eventer.Infrastructure
             }
 
             var firstCategory = context.Categories.FirstOrDefault();
-            if (firstCategory == null)
+
+            if(!context.Events.Any())
             {
-                Console.WriteLine("No categories found. Please add categories first.");
-                return;
+                var testEvents = new List<Event>
+                {
+                    new Event
+                    {
+                        Id = Guid.NewGuid(),
+                        Title = "Тестовое событие1",
+                        Description = "Описание тестового события 1",
+                        StartDate = new DateOnly(2024, 11, 20),
+                        StartTime = new TimeOnly(12, 0),
+                        Venue = "Место проведения 1",
+                        Latitude = 55.7558,
+                        Longitude = 37.6173,
+                        MaxParticipants = 100,
+                        Category = firstCategory,
+                        Registrations = new List<EventRegistration>(),
+                        ImageURLs = null
+                    },
+                    new Event
+                    {
+                        Id = Guid.NewGuid(),
+                        Title = "Тестовое событие2",
+                        Description = "Описание тестового события 2",
+                        StartDate = new DateOnly(2024, 11, 21),
+                        StartTime = new TimeOnly(14, 0),
+                        Venue = "Место проведения 2",
+                        Latitude = 55.7558,
+                        Longitude = 37.6173,
+                        MaxParticipants = 50,
+                        Category = firstCategory,
+                        Registrations = new List<EventRegistration>(),
+                        ImageURLs = null
+                    },
+                    new Event
+                    {
+                        Id = Guid.NewGuid(),
+                        Title = "Тестовое событие3",
+                        Description = "Описание тестового события 3",
+                        StartDate = new DateOnly(2024, 11, 22),
+                        StartTime = new TimeOnly(16, 0),
+                        Venue = "Место проведения 3",
+                        Latitude = 55.7558,
+                        Longitude = 37.6173,
+                        MaxParticipants = 75,
+                        Category = firstCategory,
+                        Registrations = new List<EventRegistration>(),
+                        ImageURLs = null
+                    }
+                };
+
+                context.Events.AddRange(testEvents);
+
+                context.SaveChanges();
             }
 
-            if (context.Events.Any(e => e.Title.StartsWith("Тестовое событие")))
+            if(!context.Users.Any())
             {
-                Console.WriteLine("Test events already exist.");
-                return;
+                var testUser = User.Create(Guid.NewGuid(), "TestUser", hasher.GenerateHash("123qwe"), "test@mail.com");
+
+                var testAdmin = User.Create(Guid.NewGuid(), "TestAdmin", hasher.GenerateHash("123qwe"), "test_admin@mail.com");
+                testAdmin.Role = UserRole.Admin;
+
+                context.Users.AddAsync(testUser);
+                context.Users.AddAsync(testAdmin);
+
+                context.SaveChanges();
             }
 
-            var testEvents = new List<Event>
-            {
-                new Event
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "Тестовое событие1",
-                    Description = "Описание тестового события 1",
-                    StartDate = new DateOnly(2024, 11, 20),
-                    StartTime = new TimeOnly(12, 0),
-                    Venue = "Место проведения 1",
-                    Latitude = 55.7558,
-                    Longitude = 37.6173,
-                    MaxParticipants = 100,
-                    Category = firstCategory,
-                    Registrations = new List<EventRegistration>(),
-                    ImageURLs = null
-                },
-                new Event
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "Тестовое событие2",
-                    Description = "Описание тестового события 2",
-                    StartDate = new DateOnly(2024, 11, 21),
-                    StartTime = new TimeOnly(14, 0),
-                    Venue = "Место проведения 2",
-                    Latitude = 55.7558,
-                    Longitude = 37.6173,
-                    MaxParticipants = 50,
-                    Category = firstCategory,
-                    Registrations = new List<EventRegistration>(),
-                    ImageURLs = null
-                },
-                new Event
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "Тестовое событие3",
-                    Description = "Описание тестового события 3",
-                    StartDate = new DateOnly(2024, 11, 22),
-                    StartTime = new TimeOnly(16, 0),
-                    Venue = "Место проведения 3",
-                    Latitude = 55.7558,
-                    Longitude = 37.6173,
-                    MaxParticipants = 75,
-                    Category = firstCategory,
-                    Registrations = new List<EventRegistration>(),
-                    ImageURLs = null
-                }
-            };
-
-            context.Events.AddRange(testEvents);
-
-            context.SaveChanges();
         }
     }
 }

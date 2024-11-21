@@ -1,14 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Eventer.Domain.Models
 {
     public class User
     {
+        private User(Guid id, string userName, string passwordHash, string email)
+        {
+            Id = id;
+            UserName = userName;
+            PasswordHash = passwordHash;
+            Email = email;
+        }
+
         public Guid Id { get; set; }
 
         [Required]
@@ -21,5 +24,17 @@ namespace Eventer.Domain.Models
         public string PasswordHash { get; set; }
 
         public ICollection<EventRegistration> EventRegistrations { get; set; }
+
+        public UserRole Role { get; set; }
+
+        public static User Create(Guid id, string userName, string passwordHash, string email)
+        {
+            return new User(id, userName, passwordHash, email);
+        }
+    }
+    public enum UserRole
+    {
+        User,  // Обычный пользователь
+        Admin  // Администратор
     }
 }

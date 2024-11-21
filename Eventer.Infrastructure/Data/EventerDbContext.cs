@@ -3,15 +3,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Eventer.Infrastructure.Data
 {
-    public class EventsDbContext : DbContext
+    public class EventerDbContext : DbContext
     {
 
-        public EventsDbContext(DbContextOptions<EventsDbContext> options) 
+        public EventerDbContext(DbContextOptions<EventerDbContext> options) 
             : base(options)
         {
         }
 
         public DbSet<Event> Events { get; set; }
         public DbSet<EventCategory> Categories { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }

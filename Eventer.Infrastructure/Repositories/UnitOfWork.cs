@@ -6,17 +6,19 @@ namespace Eventer.Infrastructure.Repositories
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly EventsDbContext _context;
+        private readonly EventerDbContext _context;
         private IEventRepository? _eventRepository;
         private ICategoryRepository? _categoryRepository;
+        private IUserRepository? _userRepository;
 
-        public UnitOfWork(EventsDbContext context)
+        public UnitOfWork(EventerDbContext context)
         {
             _context = context;
         }
 
         public IEventRepository Events => _eventRepository ??= new EventRepository(_context);
         public ICategoryRepository Categories => _categoryRepository ??= new CategoryRepository(_context);
+        public IUserRepository Users => _userRepository ??= new UserRepository(_context);
 
         public async Task<int> SaveChangesAsync()
         {

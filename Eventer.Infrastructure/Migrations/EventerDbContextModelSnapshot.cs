@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using Eventer.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,12 +11,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Eventer.Infrastructure.Migrations
 {
-    [DbContext(typeof(EventsDbContext))]
-    [Migration("20241120215051_InitialCreate")]
-    partial class InitialCreate
+    [DbContext(typeof(EventerDbContext))]
+    partial class EventerDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -122,11 +119,43 @@ namespace Eventer.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("EventId");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("EventRegistration");
+                });
+
+            modelBuilder.Entity("Eventer.Domain.Models.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Eventer.Domain.Models.Event", b =>
@@ -148,12 +177,21 @@ namespace Eventer.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Eventer.Domain.Models.User", null)
+                        .WithMany("EventRegistrations")
+                        .HasForeignKey("UserId");
+
                     b.Navigation("Event");
                 });
 
             modelBuilder.Entity("Eventer.Domain.Models.Event", b =>
                 {
                     b.Navigation("Registrations");
+                });
+
+            modelBuilder.Entity("Eventer.Domain.Models.User", b =>
+                {
+                    b.Navigation("EventRegistrations");
                 });
 #pragma warning restore 612, 618
         }
