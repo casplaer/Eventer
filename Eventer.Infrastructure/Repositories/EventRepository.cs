@@ -1,4 +1,4 @@
-﻿using Eventer.Application.Contracts;
+﻿using Eventer.Application.Contracts.Events;
 using Eventer.Application.Interfaces.Repositories;
 using Eventer.Domain.Models;
 using Eventer.Infrastructure.Data;
@@ -28,7 +28,18 @@ namespace Eventer.Infrastructure.Repositories
                 tmpCategory = _context.Categories.FirstOrDefault(c => c.Name == filter.Category.Name);
             }
 
-            var query = _context.Events.AsQueryable();
+            var query = _context.Events.Include(e => e.Category).AsQueryable();
+
+            if (!query.Any())
+            {
+                throw new Exception("No events");
+            }
+
+            //Фильтрация по названию
+            if(!string.IsNullOrEmpty(filter.Title))
+            {
+                query = query.Where(e => e.Title.Contains(filter.Title));
+            }
 
             // Фильтрация по дате
             if (filter.Date.HasValue)

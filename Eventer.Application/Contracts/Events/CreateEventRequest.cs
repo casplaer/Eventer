@@ -1,9 +1,8 @@
 ﻿using Eventer.Domain.Models;
 
-namespace Eventer.Application.Contracts
+namespace Eventer.Application.Contracts.Events
 {
-    public record EventDTO(
-        Guid Id,
+    public record CreateEventRequest(
         string Title,
         string Description,
         DateOnly StartDate,
@@ -12,6 +11,5 @@ namespace Eventer.Application.Contracts
         double Latitude,
         double Longitude,
         EventCategory Category,
-        int MaxParticipants,
-        List<string>? ImageURLs);
+        int MaxParticipants);
 }

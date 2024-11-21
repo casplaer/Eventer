@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Eventer.Domain.Models
+﻿namespace Eventer.Domain.Models
 {
     public class Event
     {
@@ -23,8 +17,8 @@ namespace Eventer.Domain.Models
         public EventCategory Category { get; set; } //Категория
 
         public int MaxParticipants { get; set; } //Максимальное количество участников
-        public ICollection<EventRegistration> Registrations { get; set; } //Список участников
+        public List<EventRegistration> Registrations { get; set; } = []; //Список участников
 
-        public string ImageURL { get; set; } = string.Empty; //Путь к изображению
+        public List<string>? ImageURLs { get; set; } //Пути к изображениям
     }
 }

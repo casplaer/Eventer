@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -6,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Eventer.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddImageUrlToEvent : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,7 +17,8 @@ namespace Eventer.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false)
+                    Name = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -37,7 +39,7 @@ namespace Eventer.Infrastructure.Migrations
                     Longitude = table.Column<double>(type: "double precision", nullable: false),
                     CategoryId = table.Column<Guid>(type: "uuid", nullable: false),
                     MaxParticipants = table.Column<int>(type: "integer", nullable: false),
-                    ImageURL = table.Column<string>(type: "text", nullable: false)
+                    ImageURLs = table.Column<List<string>>(type: "text[]", nullable: true)
                 },
                 constraints: table =>
                 {

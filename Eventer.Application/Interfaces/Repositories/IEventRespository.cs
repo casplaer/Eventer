@@ -1,4 +1,4 @@
-﻿using Eventer.Application.Contracts;
+﻿using Eventer.Application.Contracts.Events;
 using Eventer.Domain.Models;
 using System;
 using System.Collections.Generic;

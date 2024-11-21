@@ -1,4 +1,5 @@
 ﻿using Eventer.Application.Contracts;
+using Eventer.Application.Contracts.Events;
 using Eventer.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -33,7 +34,7 @@ namespace Eventer.API.Controllers
                                                           e.Latitude, e.Longitude,
                                                           e.Category,
                                                           e.MaxParticipants,
-                                                          e.ImageURL))
+                                                          e.ImageURLs))
                                 .ToList();
 
 

@@ -9,6 +9,6 @@ namespace Eventer.Application.Interfaces.Repositories
 {
     public interface ICategoryRepository : IRepository<EventCategory>
     {
-        Task<EventCategory?> GetByNameAsync(string name);
+        Task<IEnumerable<EventCategory?>> GetByNameAsync(string name);
     }
 }

@@ -1,10 +1,10 @@
 ﻿using Eventer.Domain.Models;
 
-namespace Eventer.Application.Contracts
+namespace Eventer.Application.Contracts.Events
 {
-    public record UpdateEventRequest(Guid Id, 
-        string? Title, 
-        string? Description, 
+    public record UpdateEventRequest(Guid Id,
+        string? Title,
+        string? Description,
         DateOnly? StartDate,
         TimeOnly? StartTime,
         string? Venue,

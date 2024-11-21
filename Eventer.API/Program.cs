@@ -2,11 +2,13 @@ using Eventer.Application.Interfaces.Repositories;
 using Eventer.Application.Interfaces.Services;
 using Eventer.Application.Services;
 using Eventer.Domain.Models;
+using Eventer.Infrastructure;
 using Eventer.Infrastructure.Data;
 using Eventer.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
+using System.Net.NetworkInformation;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -27,7 +29,12 @@ builder.Services.AddSwaggerGen(options =>
     {
         Type = "string",
         Format = "date",
-        Example = new OpenApiString("2024-11-19")
+    });
+
+    options.MapType<TimeOnly>(() => new OpenApiSchema
+    {
+        Type = "string",
+        Format= "time",
     });
 });
 
@@ -43,28 +50,23 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();//Репозито
 
 //Сервисы
 builder.Services.AddScoped<IEventService, EventService>();//Сервис для событий
+builder.Services.AddScoped<ICategoryService, CategoryService>();//Сервис для категорий
 
 var app = builder.Build();
 
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
 
-var context = services.GetRequiredService<EventsDbContext>();
-await context.Database.EnsureCreatedAsync();
-SeedData(context);
-
-void SeedData(EventsDbContext context)
+try
 {
-    if (!context.Categories.Any())
-    {
-        context.Categories.Add(new EventCategory
-        {
-            Id = Guid.NewGuid(),
-            Name = "Test Category"
-        });
-
-        context.SaveChanges();
-    }
+    var context = services.GetRequiredService<EventsDbContext>();
+    context.Database.Migrate();
+    DbInitializer.Initialize(context);
+}
+catch (Exception ex)
+{
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    logger.LogError(ex, "An error occurred while migrating the database.");
 }
 
 if (app.Environment.IsDevelopment())

@@ -12,13 +12,21 @@ namespace Eventer.Infrastructure.Repositories
 {
     public class CategoryRepository : Repository<EventCategory>, ICategoryRepository
     {
+        private readonly EventsDbContext _context;
+
         public CategoryRepository(EventsDbContext context) : base(context)
         {
+            _context = context;
         }
 
-        public async Task<EventCategory?> GetByNameAsync(string name)
+        public async Task<IEnumerable<EventCategory?>> GetByNameAsync(string name)
         {
-            return await _context.Set<EventCategory>().FirstOrDefaultAsync(c => c.Name == name);
+            if(string.IsNullOrEmpty(name))
+            {
+                return await _context.Categories.ToListAsync();
+            }
+
+            return await _context.Categories.Where(c => c.Name.Contains(name)).ToListAsync();
         }
     }
 }

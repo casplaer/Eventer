@@ -22,11 +22,6 @@ namespace Eventer.Infrastructure.Repositories
             return await _context.Set<T>().ToListAsync();
         }
 
-        public Task<IEnumerable<T>> GetByTitleAsync(string title)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task AddAsync(T entity)
         {
             await _context.Set<T>().AddAsync(entity);
