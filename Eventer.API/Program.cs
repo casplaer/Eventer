@@ -52,6 +52,17 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();//Репозито
 builder.Services.AddScoped<IEventService, EventService>();//Сервис для событий
 builder.Services.AddScoped<ICategoryService, CategoryService>();//Сервис для категорий
 
+builder.Services.AddCors(options=>
+{
+    options.AddPolicy("AllowSpecificOrigins",policy =>
+    {
+        policy.WithOrigins("http://localhost:5173") 
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+    });
+}
+);
+
 var app = builder.Build();
 
 using var scope = app.Services.CreateScope();
@@ -80,5 +91,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseCors("AllowSpecificOrigins");
 
 app.Run();

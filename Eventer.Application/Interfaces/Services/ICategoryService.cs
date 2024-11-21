@@ -1,10 +1,5 @@
 ﻿using Eventer.Application.Contracts.Categories;
 using Eventer.Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Eventer.Application.Interfaces.Services
 {
