@@ -10,14 +10,18 @@ namespace Eventer.Application.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IPasswordHasher _passwordHasher;
+        private readonly IJwtProvider _jwtProvider;
 
-        public AuthService(IUnitOfWork unitOfWork, IPasswordHasher passwordHasher)
+        public AuthService(IUnitOfWork unitOfWork, 
+            IPasswordHasher passwordHasher,
+            IJwtProvider jwtProvider)
         {
             _unitOfWork = unitOfWork;
             _passwordHasher = passwordHasher;
+            _jwtProvider = jwtProvider;
         }
 
-        public async Task<string> LoginUserAsync(LoginUserRequest request)
+        public async Task<TokensResponse> LoginUserAsync(LoginUserRequest request)
         {
             var user = await _unitOfWork.Users.GetByUserNameAsync(request.UserName);
 
@@ -28,7 +32,16 @@ namespace Eventer.Application.Services
                 throw new Exception("Failed to login");
             }
 
-            return "123";
+            var accessToken = _jwtProvider.GenerateAccessToken(user);
+            var refreshToken = _jwtProvider.GenerateRefreshToken();
+
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+
+            await _unitOfWork.Users.UpdateAsync(user);
+            await _unitOfWork.SaveChangesAsync();
+
+            return new TokensResponse(accessToken, refreshToken);
         }
 
         public async Task RegisterUserAsync(RegisterUserRequest request)
@@ -38,16 +51,56 @@ namespace Eventer.Application.Services
                 throw new ArgumentException("Пароли не совпадают.");
             }
 
-            var existingUser = await _unitOfWork.Users.GetByUserNameAsync(request.UserName);
-            if (existingUser != null)
-                throw new ArgumentException("Пользователь с таким именем уже существует.");
-
             var passwordHash = _passwordHasher.GenerateHash(request.Password);
 
             var user = User.Create(Guid.NewGuid(), request.UserName, passwordHash, request.Email);
 
             await _unitOfWork.Users.AddAsync(user);
             await _unitOfWork.SaveChangesAsync();
+        }
+
+        public async Task<TokensResponse> RefreshTokensAsync(string refreshToken)
+        {
+            // Проверяем валидность Refresh Token
+            var user = await _unitOfWork.Users.GetByRefreshTokenAsync(refreshToken);
+            if (user == null || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+            {
+                throw new UnauthorizedAccessException("Invalid or expired refresh token.");
+            }
+
+            // Генерация новых токенов
+            var newAccessToken = _jwtProvider.GenerateAccessToken(user);
+            var newRefreshToken = _jwtProvider.GenerateRefreshToken();
+
+            // Обновление Refresh Token в базе
+            user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            await _unitOfWork.Users.UpdateAsync(user);
+
+            return new TokensResponse(newAccessToken, newRefreshToken);
+        }
+
+        public async Task<User> GetUserByTokenAsync(string refreshToken)
+        {
+            var user = await _unitOfWork.Users.GetByRefreshTokenAsync(refreshToken);
+            if (user == null || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+            {
+                throw new UnauthorizedAccessException("Invalid or expired refresh token.");
+            }
+
+            return user;
+        }
+
+        public async Task<User> GetUserByUsernameAsync(string username)
+        {
+            var user = await _unitOfWork.Users.GetByUserNameAsync(username);
+
+            if (user == null)
+            {
+                throw new Exception("No such user.");
+            }
+
+            return user;
         }
     }
 }

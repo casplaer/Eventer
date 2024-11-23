@@ -1,8 +1,11 @@
 ﻿import React, { useState } from "react";
 import "../css/Sidebar.css";
+import { Link } from "react-router-dom";
+import { useAuth } from "../components/AuthContext";
 
 const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const { user, logout } = useAuth();
 
     const toggleSidebar = () => {
         setIsOpen(!isOpen);
@@ -17,11 +20,20 @@ const Sidebar = () => {
             </div>
 
             <div className="sidebar">
+                {user && <p className="sidebar-greeting">Привет, {user.userName}!</p>}
                 <ul className="sidebar-links">
-                    <li><a href="#admin">Администрированиe</a></li>
-                    <li><a href="#about">О проекте</a></li>
-                    <li><a href="#events">Список событий</a></li>
-                    <li><a href="#login">Войти</a></li>
+                    <li><Link to="/admin">Администрированиe</Link></li>
+                    <li><Link to="/about">О проекте</Link></li>
+                    <li><Link to="/events">Список событий</Link></li>
+                    {user ? (
+                        <li>
+                            <button onClick={logout} className="logout-button">Выйти</button>
+                        </li>
+                    ) : (
+                        <li>
+                            <Link to="/login">Войти</Link>
+                        </li>
+                    )}
                 </ul>
             </div>
         </div>

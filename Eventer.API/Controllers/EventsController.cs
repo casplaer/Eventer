@@ -1,10 +1,12 @@
 ﻿using Eventer.Application.Contracts;
 using Eventer.Application.Contracts.Events;
 using Eventer.Application.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Eventer.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class EventsController : Controller
@@ -25,6 +27,7 @@ namespace Eventer.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetEvents([FromQuery]GetEventsRequest request)
         {
             var eventDtos = (await _eventService.GetFilteredEventsAsync(request))

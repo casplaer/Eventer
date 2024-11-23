@@ -1,0 +1,79 @@
+.register-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f0f0;
+    width: 700px;
+}
+
+.register-container {
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    max-width: 70%;
+    width: 100%;
+    text-align: center;
+}
+
+.register-title {
+    font-size: 32px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.register-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    position: relative; /* Для иконки глаза */
+}
+
+    .form-group label {
+        font-size: 20px;
+        margin-bottom: 5px;
+        color: #555;
+    }
+
+    .form-group input {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+        width: 100%; /* Поле будет занимать всю ширину контейнера */
+        box-sizing: border-box; /* Учитывает padding и border */
+    }
+
+    .form-group .password-eye {
+        position: absolute;
+        right: 10px; /* Расстояние от правого края */
+        top: 75%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        font-size: 16px;
+        color: #333;
+    }
+
+.register-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: black;
+    background-color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-bottom: 10px;
+}

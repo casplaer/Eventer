@@ -10,10 +10,6 @@ namespace Eventer.Infrastructure
         {
             context.Database.EnsureCreated();
 
-            var users = context.Users.ToList();  
-            context.Users.RemoveRange(users);   
-            context.SaveChanges();
-
             if (!context.Categories.Any())
             {
                 var testCategories = new List<EventCategory>

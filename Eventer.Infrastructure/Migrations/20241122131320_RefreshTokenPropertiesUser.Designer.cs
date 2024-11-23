@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Eventer.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Eventer.Infrastructure.Migrations
 {
     [DbContext(typeof(EventerDbContext))]
-    partial class EventerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241122131320_RefreshTokenPropertiesUser")]
+    partial class RefreshTokenPropertiesUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

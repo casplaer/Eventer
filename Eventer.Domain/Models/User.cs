@@ -27,6 +27,10 @@ namespace Eventer.Domain.Models
 
         public UserRole Role { get; set; }
 
+        //Данные Refresh токена
+        public string RefreshToken { get; set; } = string.Empty;
+        public DateTime RefreshTokenExpiryTime { get; set; } = DateTime.UtcNow.AddDays(7);
+
         public static User Create(Guid id, string userName, string passwordHash, string email)
         {
             return new User(id, userName, passwordHash, email);

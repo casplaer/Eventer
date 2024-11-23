@@ -55,3 +55,31 @@ body {
     margin: 5px 0;
     color: #555;
 }
+
+.filter-form {
+    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+    .form-group label {
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+.filter-button {
+    grid-column: 1 / -1;
+    padding: 10px;
+    font-size: 1rem;
+    background-color: white;
+    color: black;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}

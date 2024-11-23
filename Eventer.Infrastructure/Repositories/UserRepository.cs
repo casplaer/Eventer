@@ -32,5 +32,16 @@ namespace Eventer.Infrastructure.Repositories
 
             return user;
         }
+
+        public async Task<User> GetByRefreshTokenAsync(string token)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == token);
+            if(user == null)
+            {
+                return null;
+            }
+
+            return user;
+        }
     }
 }

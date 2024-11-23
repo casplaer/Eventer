@@ -2,14 +2,14 @@ using Eventer.Application.Interfaces.Auth;
 using Eventer.Application.Interfaces.Repositories;
 using Eventer.Application.Interfaces.Services;
 using Eventer.Application.Services;
-using Eventer.Domain.Models;
 using Eventer.Infrastructure;
 using Eventer.Infrastructure.Data;
 using Eventer.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Any;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Net.NetworkInformation;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -57,16 +57,47 @@ builder.Services.AddScoped<IAuthService,  AuthService>();//Сервис для аутентифик
 
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();//Хэшер
 
+//CORS для доступа клиента к API
 builder.Services.AddCors(options=>
 {
-    options.AddPolicy("AllowSpecificOrigins",policy =>
+    options.AddPolicy("AllowReactClient",policy =>
     {
         policy.WithOrigins("http://localhost:5173") 
                   .AllowAnyHeader()
-                  .AllowAnyMethod();
+                  .AllowAnyMethod()
+                  .AllowCredentials();
     });
 }
 );
+
+builder.Services.AddScoped<IJwtProvider, JwtProvider>();
+
+//Конфигурация JWT
+builder.Services.AddAuthentication(options=>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options=>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+        ClockSkew = TimeSpan.Zero,
+    };
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminPolicy", policy =>
+        policy.RequireRole("Admin"));
+});
 
 var app = builder.Build();
 
@@ -94,10 +125,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors("AllowReactClient");
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.UseCors("AllowSpecificOrigins");
 
 app.Run();
