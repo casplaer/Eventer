@@ -1,25 +1,25 @@
 import React, { useEffect, useState } from "react";
 import "../css/EventPage.css";
 import apiClient from "../api/apiClient";
+import usersIcon from "../assets/multiple-users.png";
 
 const EventsPage = () => {
     const [events, setEvents] = useState([]);
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [page, setPage] = useState(1); // Текущая страница
-    const [totalPages, setTotalPages] = useState(1); // Общее количество страниц
+    const [page, setPage] = useState(1); 
+    const [totalPages, setTotalPages] = useState(1); 
 
     const [filters, setFilters] = useState({
         title: "",
         date: "",
         venue: "",
-        category:"",
+        category: "",
     });
 
     const fetchEvents = async () => {
         try {
-            console.log(filters.category.id);
             const response = await apiClient.get("/events", {
                 params: {
                     Title: filters.title || null,
@@ -28,7 +28,10 @@ const EventsPage = () => {
                     CategoryId: filters.category?.id || null,
                     page,
                 },
-                });
+            });
+
+            console.log(response.data);
+
             setEvents(response.data.events);
             setTotalPages(response.data.totalPages);
             setLoading(false);
@@ -141,17 +144,26 @@ const EventsPage = () => {
                 <button type="submit" className="filter-button">Применить фильтры</button>
             </form>
 
-            <div className="events-grid">
+            <div className="events-list">
                 {events.map((event) => (
                     <div key={event.id} className="event-card">
-                        <h2>{event.title}</h2>
-                        <p>{event.description}</p>
-                        <p>
-                            Дата: {event.startDate} | Время: {event.startTime}
-                        </p>
-                        <p>Место: {event.venue}</p>
-                        <p>Категория: {event.category.name}</p>
-                        <p>Максимум участников: {event.maxParticipants}</p>
+                        <h2
+                            className="event-title"
+                            onClick={() => (window.location.href = `/details/${event.id}`)}
+                        >
+                            {event.title}
+                        </h2>
+                        <p className="event-address">Адрес: {event.venue}</p>
+                        <div className="event-footer">
+                            <span className="event-participants">
+                                {event.currentRegistrations}/{event.maxParticipants}
+                            </span>
+                            <img
+                                src={usersIcon}
+                                alt="Icon"
+                                className="event-icon"
+                            />
+                        </div>
                     </div>
                 ))}
             </div>

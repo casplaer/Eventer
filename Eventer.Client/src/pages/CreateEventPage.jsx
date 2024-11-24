@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import "../css/CreateEventPage.css";
 import apiClient from "../api/apiClient";
-import ImageUploader from '../components/ImageUploader'
+import ImageUploader from '../components/ImageUploader';
+import plus from "../assets/plus.png";
 
 const CreateEventPage = () => {
     const [formData, setFormData] = useState({
@@ -21,6 +22,7 @@ const CreateEventPage = () => {
     const [success, setSuccess] = useState(null);
     const navigate = useNavigate();
     const token = sessionStorage.getItem("accessToken");
+    const [images, setImages] = useState([]);
 
     useEffect(() => {
         const role = token ? jwtDecode(token)["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] : null;
@@ -70,22 +72,20 @@ const CreateEventPage = () => {
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleImageChange = (e) => {
-        const files = Array.from(e.target.files);
-        if (formData.images.length + files.length > 3) {
-            setError("Можно загрузить не более трех изображений.");
+    const handleImageUpload = (event) => {
+        const files = Array.from(event.target.files);
+
+        if (images.length + files.length > 3) {
+            setError("Можно загрузить не более 3 изображений.");
             return;
         }
-        const newImages = files.map((file) => ({
-            file,
-            url: URL.createObjectURL(file),
-        }));
-        setFormData({ ...formData, images: [...formData.images, ...newImages] });
+
+        setImages((prev) => [...prev, ...files]);
     };
 
     const handleRemoveImage = (index) => {
-        const updatedImages = formData.images.filter((_, i) => i !== index);
-        setFormData({ ...formData, images: updatedImages });
+        const updatedImages = images.filter((_, i) => i !== index);
+        setImages(updatedImages);
     };
 
     const handleSubmit = async (e) => {
@@ -93,24 +93,38 @@ const CreateEventPage = () => {
         setError(null);
         setSuccess(null);
 
+        const selectedCategory = categories.find(category => category.name === formData.category);
+        formData.category = selectedCategory;
+
         const formDataToSend = new FormData();
+
+        images.forEach((file, index) => {
+            formDataToSend.append("images", file); 
+        });
 
         formDataToSend.append("title", formData.title);
         formDataToSend.append("description", formData.description);
         formDataToSend.append("startDate", formData.date);
         formDataToSend.append("startTime", formData.time);
         formDataToSend.append("venue", formData.venue);
-        formDataToSend.append("category", formData.category);
+        formDataToSend.append("category.Id", formData.category.id);
+        formDataToSend.append("category.Name", formData.category.name); 
+        formDataToSend.append("category.Description", formData.category.description || "");
         formDataToSend.append("maxParticipants", formData.maxParticipants);
 
-        formData.images.forEach((image, index) => {
-            formDataToSend.append(`images[${index}]`, image.file);
-        });
+        for (let [key, value] of formDataToSend.entries()) {
+            console.log(`${key}:`, value);
+        }
+
 
         try {
-            const response = await apiClient.post("/events", formDataToSend, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
+            const response = await apiClient.post("/events", formDataToSend,
+                {
+                    headers:
+                    {
+                        "Content-Type": "multipart/form-data" 
+                    }
+                });
 
             console.log("Событие успешно создано!", response.data);
             setSuccess("Событие успешно создано!");
@@ -124,6 +138,7 @@ const CreateEventPage = () => {
                 maxParticipants: "",
                 images: [],
             });
+            setImages([]);
         } catch (err) {
             const errorResponse = err.response?.data;
             const firstError = errorResponse?.errors
@@ -224,28 +239,77 @@ const CreateEventPage = () => {
                         required
                     />
                 </div>
-{/*                <div className="form-group">
-                    <label htmlFor="images">Загрузите изображения (не более 3)</label>
-                    <input
-                        type="file"
-                        id="images"
-                        name="images"
-                        multiple
-                        accept="image/*"
-                        onChange={handleImageChange}
-                    />
-                    <div className="image-previews">
-                        {formData.images.map((image, index) => (
-                            <div key={index} className="image-preview">
-                                <img src={image.url} alt={`Preview ${index + 1}`} />
-                                <button type="button" onClick={() => handleRemoveImage(index)}>
-                                    ✕
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                </div>*/}
-                <ImageUploader />
+                <div style={{ display: "flex", gap: "10px" }}>
+                    {images.map((image, index) => (
+                        <div
+                            key={index}
+                            style={{
+                                position: "relative",
+                                width: "150px",
+                                height: "150px",
+                            }}
+                        >
+                            <img
+                                src={URL.createObjectURL(image)}
+                                alt={`Uploaded ${index + 1}`}
+                                style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    objectFit: "cover",
+                                    borderRadius: "8px",
+                                }}
+                            />
+                            <button
+                                onClick={() => handleRemoveImage(index)}
+                                style={{
+                                    position: "absolute",
+                                    top: "5px",
+                                    right: "5px",
+                                    background: "black",
+                                    color: "white",
+                                    border: "none",
+                                    borderRadius: "0%",
+                                    width: "20px",
+                                    height: "20px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                ×
+                            </button>
+                        </div>
+                    ))}
+                    {images.length < 3 && (
+                        <label
+                            style={{
+                                width: "150px",
+                                height: "150px",
+                                background: "lightgray",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                cursor: "pointer",
+                                borderRadius: "4px",
+                                fontSize: "35px",
+                            }}
+                        >
+                            <img
+                                src={plus}
+                                alt="Add"
+                                style={{ width: "25px", height: "25px" }}
+                            />
+                            <input
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={handleImageUpload}
+                                style={{ display: "none" }}
+                            />
+                        </label>
+                    )}
+                </div>
                 {error && <p className="error-message">{error}</p>}
                 {success && <p className="success-message">{success}</p>}
                 <button type="submit" className="create-event-button">Создать</button>

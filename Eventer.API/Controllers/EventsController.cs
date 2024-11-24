@@ -1,8 +1,8 @@
-﻿using Eventer.Application.Contracts;
-using Eventer.Application.Contracts.Events;
+﻿using Eventer.Application.Contracts.Events;
 using Eventer.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Eventer.API.Controllers
 {
@@ -20,7 +20,8 @@ namespace Eventer.API.Controllers
 
         [HttpPost]
         [Authorize(Policy = "AdminPolicy")]
-        public async Task<IActionResult> CreateEvent([FromBody]CreateEventRequest request)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> CreateEvent([FromForm]CreateEventRequest request)
         {
             await _eventService.AddEventAsync(request);
 
@@ -40,12 +41,23 @@ namespace Eventer.API.Controllers
                                                           e.Latitude, e.Longitude,
                                                           e.Category,
                                                           e.MaxParticipants,
-                                                          e.ImageURLs))
+                                                          e.ImageURLs,
+                                                          e.Registrations.Count))
                                 .ToList();
 
             var totalPages = data.TotalPages;
 
             return Ok(new GetEventsResponse(eventDtos, totalPages));
+        }
+
+        [HttpPost("enroll")]
+        [Authorize]
+        public async Task<IActionResult> EnrollOnEvent([FromBody] EnrollRequest request)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            await _eventService.EnrollOnEventAsync(request, new Guid(userId!));
+            return Ok();
         }
 
         [HttpGet("{id}")]
@@ -54,12 +66,19 @@ namespace Eventer.API.Controllers
         {
             var eventToReturn = await _eventService.GetEventByIdAsync(id);
 
+            if(eventToReturn == null)
+            {
+                return NotFound(new { Message = "Событие не найдено." });
+            }
+
             return Ok(eventToReturn);
         }
 
 
         [HttpPut]
-        public async Task<IActionResult> UpdateEvent([FromBody]UpdateEventRequest request)
+        [Authorize(Policy = "AdminPolicy")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UpdateEvent([FromForm]UpdateEventRequest request)
         {
             await _eventService.UpdateEventAsync(request);
 

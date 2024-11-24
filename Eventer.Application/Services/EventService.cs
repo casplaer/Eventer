@@ -11,9 +11,17 @@ namespace Eventer.Application.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly int pageSize = 7;
-        public EventService(IUnitOfWork unitOfWork)
+        private readonly string uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "events");
+        private readonly HttpClient _httpClient;
+
+        public EventService(IUnitOfWork unitOfWork, HttpClient httpClient)
         {
             _unitOfWork = unitOfWork;
+            if (!Directory.Exists(uploadPath))
+            {
+                Directory.CreateDirectory(uploadPath);
+            }
+            _httpClient = httpClient;
         }
 
         public async Task<IEnumerable<Event>> GetAllEventsAsync()
@@ -21,9 +29,29 @@ namespace Eventer.Application.Services
             return await _unitOfWork.Events.GetAllAsync();
         }
 
-        public async Task<Event?> GetEventByIdAsync(Guid id)
+        public async Task<SingleEventResponse?> GetEventByIdAsync(Guid id)
         {
-            return await _unitOfWork.Events.GetByIdAsync(id);
+            var eventToReturn = await _unitOfWork.Events.GetByIdAsync(id);
+
+            if (eventToReturn == null)
+            {
+                return null;
+            }
+
+            int regs = eventToReturn.Registrations.Count;
+
+            return new SingleEventResponse(
+                eventToReturn.Id,
+                eventToReturn.Title,
+                eventToReturn.Description,
+                eventToReturn.StartDate,
+                eventToReturn.StartTime,
+                eventToReturn.Venue,
+                eventToReturn.Category,
+                eventToReturn.MaxParticipants,
+                regs,
+                eventToReturn.ImageURLs
+            );
         }
 
         public async Task<PaginatedResult<Event>> GetFilteredEventsAsync(GetEventsRequest request)
@@ -104,6 +132,27 @@ namespace Eventer.Application.Services
                 throw new ArgumentException($"Category with ID {request.Category.Id} not found.");
             }
 
+            var imagePaths = new List<string>();
+
+            if (request.Images != null && request.Images.Any())
+            {
+                foreach (var image in request.Images)
+                {
+                    if (image.Length > 0)
+                    {
+                        var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
+                        var filePath = Path.Combine(uploadPath, uniqueFileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await image.CopyToAsync(stream);
+                        }
+
+                        imagePaths.Add($"{_httpClient.BaseAddress}/uploads/events/{uniqueFileName}");
+                    }
+                }
+            }
+
             var newEvent = new Event()
             {
                 Title = request.Title,
@@ -115,6 +164,7 @@ namespace Eventer.Application.Services
                 Longitude = request.Longitude,
                 Category = category,
                 MaxParticipants = request.MaxParticipants,
+                ImageURLs = imagePaths
             };
 
             await _unitOfWork.Events.AddAsync(newEvent);
@@ -159,7 +209,55 @@ namespace Eventer.Application.Services
 
             if (request.MaxParticipants.HasValue)
                 eventToUpdate.MaxParticipants = request.MaxParticipants.Value;
-            
+
+            var imagePaths = new List<string>();
+
+            if (request.Images != null && request.Images.Any())
+            {
+                foreach (var image in request.Images)
+                {
+                    if (image.Length > 0)
+                    {
+                        var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
+                        var filePath = Path.Combine(uploadPath, uniqueFileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await image.CopyToAsync(stream);
+                        }
+
+                        imagePaths.Add($"{_httpClient.BaseAddress}/uploads/events/{uniqueFileName}");
+                    }
+                }
+            }
+
+            if (request.ExistingImages != null && request.ExistingImages.Any())
+            {
+                foreach (var existingImage in request.ExistingImages)
+                {
+                    if (!string.IsNullOrEmpty(existingImage))
+                    {
+                        var fileName = Path.GetFileName(existingImage);
+                        imagePaths.Add($"{_httpClient.BaseAddress}/uploads/events/{fileName}");
+                    }
+                }
+            }
+
+            if(request.RemovedImages != null && request.RemovedImages.Any())
+            {
+                foreach(var image in request.RemovedImages)
+                {
+                    if (image.Length > 0)
+                    {
+                        var imagePath = Path.Combine(uploadPath, Path.GetFileName(image));
+                        File.Delete(imagePath);
+                    }
+                }
+            }
+
+            eventToUpdate.ImageURLs = imagePaths;
+
+            await _unitOfWork.Events.UpdateAsync(eventToUpdate);
             await _unitOfWork.SaveChangesAsync();
         }
 
@@ -169,12 +267,53 @@ namespace Eventer.Application.Services
 
             if (eventToDelete == null)
                 return false;
-            
+
+            var registrationsToDelete = eventToDelete.Registrations;
+
+            if (registrationsToDelete != null && registrationsToDelete.Any())
+            {
+                foreach (var registration in registrationsToDelete)
+                {
+                    await _unitOfWork.Registrations.DeleteAsync(registration.Id);
+                }
+            }
+
 
             await _unitOfWork.Events.DeleteAsync(id);
             await _unitOfWork.SaveChangesAsync();
 
             return true;
+        }
+
+        public async Task EnrollOnEventAsync(EnrollRequest request, Guid userId)
+        {
+            var registrationToCreate = new EventRegistration
+            {
+                Name = request.Name,
+                Surname = request.SurName,
+                Email = request.Email,
+                EventId = request.EventId,
+                UserId = userId,
+                RegistrationDate = DateTime.UtcNow,
+                DateOfBirth = request.DateOfBirth
+            };
+
+            var eventToEnrollOn = await _unitOfWork.Events.GetByIdAsync(request.EventId);
+            eventToEnrollOn!.Registrations.Add(registrationToCreate);
+
+            await _unitOfWork.Events.UpdateAsync(eventToEnrollOn);
+
+            var userToEnroll = await _unitOfWork.Users.GetByIdAsync(userId);
+            if(userToEnroll.EventRegistrations == null)
+            {
+                userToEnroll.EventRegistrations = [];
+            }
+            userToEnroll.EventRegistrations.Add(registrationToCreate);
+
+            await _unitOfWork.Users.UpdateAsync(userToEnroll);
+
+            await _unitOfWork.Registrations.AddAsync(registrationToCreate);
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

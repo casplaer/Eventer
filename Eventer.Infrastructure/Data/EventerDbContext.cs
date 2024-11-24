@@ -14,5 +14,6 @@ namespace Eventer.Infrastructure.Data
         public DbSet<Event> Events { get; set; }
         public DbSet<EventCategory> Categories { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<EventRegistration> Registrations { get; set; }
     }
 }

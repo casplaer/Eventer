@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+п»їimport React, { useState } from "react";
+import plus from "../assets/plus.png"
 
 const ImageUploader = () => {
     const [images, setImages] = useState([]);
@@ -8,47 +9,95 @@ const ImageUploader = () => {
         if (file) {
             const reader = new FileReader();
             reader.onload = () => {
+                const fileDataUrl = reader.result;
+
+                if (images.includes(fileDataUrl)) {
+                    alert("Р­С‚Рѕ РёР·РѕР±СЂР°Р¶РµРЅРёРµ СѓР¶Рµ РґРѕР±Р°РІР»РµРЅРѕ!");
+                    return;
+                }
+
                 const newImages = [...images];
-                newImages[index] = reader.result;
+                newImages[index] = fileDataUrl;
                 setImages(newImages);
-                if (images.length < 3 && !newImages.includes(null)) {
-                    setImages([...newImages, null]); // Добавляем новый слот только после загрузки изображения
+
+                if (newImages.length < 3 && !newImages.includes(null)) {
+                    setImages([...newImages, null]);
                 }
             };
             reader.readAsDataURL(file);
         }
     };
 
+    const handleRemoveImage = (index) => {
+        const newImages = [...images];
+        newImages.splice(index, 1);
+        setImages(newImages);
+    };
+
     return (
         <div style={{ display: "flex", gap: "10px" }}>
             {images.map((image, index) => (
-                <div key={index} style={{ position: "relative" }}>
+                <div
+                    key={index}
+                    style={{
+                        position: "relative",
+                        width: "150px",
+                        height: "150px",
+                    }}
+                >
                     {image ? (
-                        <img
-                            src={image}
-                            alt={`Uploaded ${index + 1}`}
-                            style={{
-                                width: "150px",
-                                height: "150px",
-                                objectFit: "cover",
-                                borderRadius: "8px",
-                            }}
-                        />
+                        <>
+                            <img
+                                src={image}
+                                alt={`Uploaded ${index + 1}`}
+                                style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    objectFit: "cover",
+                                    borderRadius: "8px",
+                                }}
+                            />
+                            <button
+                                onClick={() => handleRemoveImage(index)}
+                                style={{
+                                    position: "absolute",
+                                    top: "5px",
+                                    right: "5px",
+                                    background: "black",
+                                    color: "white",
+                                    border: "none",
+                                    borderRadius: "0%",
+                                    width: "20px",
+                                    height: "20px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                Г—
+                            </button>
+                        </>
                     ) : (
                         <label
                             htmlFor={`upload-${index}`}
                             style={{
                                 width: "150px",
                                 height: "150px",
-                                background: "gray",
+                                background: "lightgray",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
                                 cursor: "pointer",
-                                borderRadius: "8px",
+                                borderRadius: "4px",
+                                fontSize: "35px",
                             }}
                         >
-                            +
+                            <img
+                                src={plus}
+                                alt="Add"
+                                style={{ width: "25px", height: "25px" }}
+                            />
                             <input
                                 id={`upload-${index}`}
                                 type="file"
@@ -60,18 +109,18 @@ const ImageUploader = () => {
                     )}
                 </div>
             ))}
-            {/* Последний квадрат создаётся только если он пустой */}
             {images.length === 0 && (
                 <div
                     style={{
                         width: "150px",
                         height: "150px",
-                        background: "gray",
+                        background: "lightgray",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                         cursor: "pointer",
-                        borderRadius: "8px",
+                        borderRadius: "4px",
+                        fontSize: "35px",
                     }}
                 >
                     <label
@@ -85,7 +134,11 @@ const ImageUploader = () => {
                             cursor: "pointer",
                         }}
                     >
-                        +
+                        <img
+                            src={ plus }
+                            alt="Add"
+                            style={{ width: "25px", height: "25px" }}
+                        />
                         <input
                             id="upload-0"
                             type="file"

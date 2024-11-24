@@ -1,4 +1,5 @@
 ﻿using Eventer.Domain.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Eventer.Application.Contracts.Events
 {
@@ -11,5 +12,8 @@ namespace Eventer.Application.Contracts.Events
         double? Latitude,
         double? Longitude,
         EventCategory? Category,
-        int? MaxParticipants);
+        int? MaxParticipants,
+        IEnumerable<IFormFile>? Images,
+        IEnumerable<string>? RemovedImages,
+        IEnumerable<string>? ExistingImages);
 }

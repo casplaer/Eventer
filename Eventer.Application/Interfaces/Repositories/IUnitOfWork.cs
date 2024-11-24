@@ -7,6 +7,7 @@ namespace Eventer.Application.Interfaces.Repositories
         IEventRepository Events { get; }
         ICategoryRepository Categories { get; }
         IUserRepository Users { get; }
+        IRepository<EventRegistration> Registrations { get; }
         Task<int> SaveChangesAsync();
     }
 }

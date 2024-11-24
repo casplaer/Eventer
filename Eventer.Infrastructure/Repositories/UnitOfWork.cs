@@ -10,7 +10,7 @@ namespace Eventer.Infrastructure.Repositories
         private IEventRepository? _eventRepository;
         private ICategoryRepository? _categoryRepository;
         private IUserRepository? _userRepository;
-
+        private IRepository<EventRegistration> _eventRegistrationRepository;
         public UnitOfWork(EventerDbContext context)
         {
             _context = context;
@@ -18,7 +18,8 @@ namespace Eventer.Infrastructure.Repositories
 
         public IEventRepository Events => _eventRepository ??= new EventRepository(_context);
         public ICategoryRepository Categories => _categoryRepository ??= new CategoryRepository(_context);
-        public IUserRepository Users => _userRepository ??= new UserRepository(_context);
+        public IUserRepository Users => _userRepository ??= new UserRepository(_context);   
+        public IRepository<EventRegistration> Registrations => _eventRegistrationRepository ?? new Repository<EventRegistration>(_context);
 
         public async Task<int> SaveChangesAsync()
         {

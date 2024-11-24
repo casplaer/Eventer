@@ -57,6 +57,8 @@ builder.Services.AddScoped<IAuthService,  AuthService>();//Сервис для аутентифик
 
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();//Хэшер
 
+builder.Services.AddHttpClient<IEventService, EventService>(opt=>opt.BaseAddress = new Uri(builder.Configuration.GetSection("ApiSettings")["BaseUrl"]));
+
 //CORS для доступа клиента к API
 builder.Services.AddCors(options=>
 {
@@ -119,8 +121,8 @@ catch (Exception ex)
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    //app.UseSwagger();
+    //app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
@@ -129,6 +131,8 @@ app.UseCors("AllowReactClient");
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseStaticFiles();
 
 app.MapControllers();
 

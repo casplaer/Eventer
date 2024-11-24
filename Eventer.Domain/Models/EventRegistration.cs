@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Eventer.Domain.Models
+﻿namespace Eventer.Domain.Models
 {
     public class EventRegistration
     {
@@ -17,10 +11,8 @@ namespace Eventer.Domain.Models
         public DateOnly DateOfBirth { get; set; }
 
         public Guid EventId { get; set; }
-        public Event Event { get; set; } //Событие
+        public Guid UserId { get; set; }
 
         public DateTime RegistrationDate { get; set; }
-
-        public string ErrorMessage { get; set; } = string.Empty;
     }
 }

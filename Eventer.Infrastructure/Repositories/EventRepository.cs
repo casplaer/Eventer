@@ -17,12 +17,16 @@ namespace Eventer.Infrastructure.Repositories
 
         public override Task<Event?> GetByIdAsync(Guid id)
         {
-            return _context.Events.Include(e=>e.Category).FirstOrDefaultAsync(e=>e.Id == id);
+            return _context.Events.Include(e=>e.Category)
+                        .Include(e => e.Registrations)
+                        .FirstOrDefaultAsync(e=>e.Id == id);
         }
 
         public IQueryable<Event> GetAllQueryable()
         {
-            return _context.Events.Include(e => e.Category).AsQueryable();
+            return _context.Events.Include(e => e.Category)
+                        .Include(e => e.Registrations)
+                        .AsQueryable();
         }
 
         public async Task<IEnumerable<Event>> GetFilteredEventsAsync(GetEventsRequest filter)

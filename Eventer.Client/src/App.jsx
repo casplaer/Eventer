@@ -10,7 +10,8 @@ import { AuthProvider } from './components/AuthContext';
 import AdminPage from './pages/AdminPage';
 import CreateEventPage from './pages/CreateEventPage'
 import EditEventPage from './pages/EditEventPage';
-
+import EventDetailsPage from './pages/EventDetailsPage'
+import EnrollPage from './pages/EnrollPage'
 
 const AuthWrapper = ({ children }) => {
     const navigate = useNavigate();
@@ -33,6 +34,8 @@ function App() {
                             <Route path="/admin" element={<AdminPage />} />
                             <Route path="/create_event" element={<CreateEventPage />}></Route>
                             <Route path="/edit_event/:id" element={<EditEventPage />} />
+                            <Route path="/details/:id" element={< EventDetailsPage/>} />
+                            <Route path="/enroll/:id" element={< EnrollPage />} />
                         </Routes>
                     </div>
                 </div>

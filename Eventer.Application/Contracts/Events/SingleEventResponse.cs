@@ -2,17 +2,15 @@
 
 namespace Eventer.Application.Contracts.Events
 {
-    public record EventDTO(
+    public record SingleEventResponse(
         Guid Id,
         string Title,
         string Description,
         DateOnly StartDate,
         TimeOnly StartTime,
         string Venue,
-        double Latitude,
-        double Longitude,
         EventCategory Category,
         int MaxParticipants,
-        List<string>? ImageURLs,
-        int CurrentRegistrations);
+        int CurrentRegistrations,
+        IEnumerable<string>? Images);
 }

@@ -45,6 +45,11 @@ body {
     margin-bottom: 10px;
 }
 
+    .event-title:hover {
+        text-decoration: none;
+        cursor: pointer;
+    }
+
 .event-description {
     font-size: 1rem;
     margin-bottom: 10px;
@@ -84,6 +89,13 @@ body {
     cursor: pointer;
 }
 
+.event-address {
+    margin: 10px 0;
+    font-size: 14px;
+    color: #555;
+}
+
+
 .events-error-message {
     font-weight: bold;
     font-size: 24px;
@@ -93,4 +105,24 @@ body {
 .loading-text{
     font-weight: bold;
     font-size: 20px;
+}
+
+.event-footer {
+    bottom: 10px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.event-participants {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-left: auto;
+}
+
+.event-icon {
+    width: 20px;
+    height: 20px;
 }
