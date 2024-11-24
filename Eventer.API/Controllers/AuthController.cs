@@ -17,10 +17,17 @@ namespace Eventer.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody]RegisterUserRequest request)
         {
-            var existingUser = await _authService.GetUserByUsernameAsync(request.UserName);
-            if (existingUser != null)
+            try
             {
-                return BadRequest(new { Message = "Пользователь с таким логином уже существует." });
+                var existingUser = await _authService.GetUserByUsernameAsync(request.UserName);
+                if (existingUser != null)
+                {
+                    return BadRequest(new { Message = "Пользователь с таким логином уже существует." });
+                }
+            }
+            catch(Exception ex)
+            {
+
             }
 
             try
@@ -37,14 +44,24 @@ namespace Eventer.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody]LoginUserRequest request)
         {
-            var tokens = await _authService.LoginUserAsync(request);
+            TokensResponse tmpTokens;
+            try
+            {
+                tmpTokens = await _authService.LoginUserAsync(request);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(400, new {Message = "Такого пользователя не существует."});
+            }
+
+            var tokens = tmpTokens;
 
             var user = await _authService.GetUserByUsernameAsync(request.UserName);
 
             var userDTO = new UserDTO(user.UserName, 
                                 user.Email,  
-                                user.EventRegistrations, 
-                                user.Role);
+                                user.EventRegistrations
+                                );
 
             return Ok(new
             {

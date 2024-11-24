@@ -9,7 +9,6 @@ apiClient.interceptors.request.use(
     (config) => {
         const token = sessionStorage.getItem("accessToken");
         if (token) {
-            console.log(token);
             config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
@@ -30,7 +29,6 @@ apiClient.interceptors.response.use(
             try {
                 // Запрос на эндпоинт /refresh
                 const refreshToken = sessionStorage.getItem("refreshToken");
-                console.log("Refresh Token:", refreshToken);
 
                 debugger;
 
@@ -40,7 +38,6 @@ apiClient.interceptors.response.use(
                 );
 
                 const newAccessToken = refreshResponse.data; // Убедитесь, что сервер возвращает правильное имя
-                console.log("New Access Token:", newAccessToken);
                 debugger;
 
                 // Новый Access Token в sessionStorage

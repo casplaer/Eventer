@@ -1,4 +1,5 @@
-﻿using Eventer.Application.Contracts.Events;
+﻿using Eventer.Application.Contracts;
+using Eventer.Application.Contracts.Events;
 using Eventer.Domain.Models;
 
 namespace Eventer.Application.Interfaces.Services
@@ -7,7 +8,7 @@ namespace Eventer.Application.Interfaces.Services
     {
         Task<IEnumerable<Event>> GetAllEventsAsync();
         Task<Event?> GetEventByIdAsync(Guid id);
-        Task<IEnumerable<Event>> GetFilteredEventsAsync(GetEventsRequest request);
+        Task<PaginatedResult<Event>> GetFilteredEventsAsync(GetEventsRequest request);
         Task AddEventAsync(CreateEventRequest request);
         Task UpdateEventAsync(UpdateEventRequest request);
         Task<bool> DeleteEventAsync(Guid id);

@@ -1,0 +1,176 @@
+.admin-page {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.events-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.event-card {
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    width: 100%; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+    .event-card h2 {
+        margin: 0;
+        font-size: 18px;
+        color: #333;
+    }
+
+.event-id {
+    margin-top: 5px;
+    font-size: 14px;
+    color: #777;
+}
+
+.event-actions {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+}
+
+.edit-button,
+.delete-button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.edit-button {
+    bottom: 10px;
+    left: 10px;
+    background-color: #007bff;
+    color: white;
+}
+
+.edit-button:hover {
+    background-color: #0056c5;
+}
+
+.delete-button {
+    bottom: 10px;
+    right: 10px;
+    background-color: #dc3545;
+    color: white;
+}
+
+.delete-button:hover {
+    background-color: #c82333;
+}
+
+.pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+    .pagination button {
+        padding: 5px 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: white;
+        color: black;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+        .pagination button:disabled {
+            background-color: #f1f1f1;
+            cursor: not-allowed;
+        }
+
+    .pagination span {
+        font-size: 16px;
+    }
+
+.create-event-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: #28a745;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: background-color 0.3s ease;
+}
+
+    .create-event-button:hover {
+        background-color: #218838;
+    }
+
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    width: 400px;
+    text-align: center;
+}
+
+    .popup h2 {
+        margin-bottom: 10px;
+        font-size: 20px;
+    }
+
+    .popup p {
+        margin: 10px 0;
+    }
+
+.popup-actions {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.confirm-button {
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+    .confirm-button:hover {
+        background-color: #c9302c;
+    }
+
+.cancel-button {
+    background-color: #f0f0f0;
+    color: #333;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+    .cancel-button:hover {
+        background-color: #e0e0e0;
+    }

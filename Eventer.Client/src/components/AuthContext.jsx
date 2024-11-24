@@ -5,7 +5,6 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children, navigate }) => {
     const [user, setUser] = useState(null);
 
-    // ѕроверка наличи€ токена при загрузке приложени€
     useEffect(() => {
         const accessToken = sessionStorage.getItem("accessToken");
         const storedUser = sessionStorage.getItem("user");
@@ -17,12 +16,12 @@ export const AuthProvider = ({ children, navigate }) => {
 
     const login = (userData) => {
         setUser(userData);
-        sessionStorage.setItem("user", JSON.stringify(userData)); // —охранение данных пользовател€
+        sessionStorage.setItem("user", JSON.stringify(userData));
     };
 
     const logout = () => {
         setUser(null);
-        sessionStorage.clear(); // ”даление всех данных из сессии
+        sessionStorage.clear();
         navigate("/about");
     };
 

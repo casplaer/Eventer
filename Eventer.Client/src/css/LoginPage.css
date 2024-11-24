@@ -3,7 +3,8 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: #f9f9f9;
+    background-color: #f0f0f0;
+    width: 500px;
 }
 
 .login-container {
@@ -50,17 +51,18 @@
 
 .login-button {
     padding: 10px 20px;
-    font-size: 16px;
-    color: white;
-    background-color: #007bff;
-    border: none;
+    font-size: 20px;
+    color: black;
+    background-color: white;
+    border: 1px solid transparent;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    font-weight: bold;
+    transition: background-color 0.3s ease, border 0.3s ease;
 }
 
     .login-button:hover {
-        background-color: #0056b3;
+        border: 1px solid black; 
     }
 
 .login-footer {
@@ -74,9 +76,14 @@
     text-decoration: none;
     padding: 10px 20px;
     font-size: 16px;
+    border: 1px solid transparent;
+    font-weight: bold;
     color: #333;
     background-color: white;
     border: none;
     border-radius: 5px;
-    transition: background-color 0.3s ease;
+}
+
+.register-button:hover {
+    border: 1px solid black;
 }

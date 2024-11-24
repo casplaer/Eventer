@@ -11,5 +11,6 @@ namespace Eventer.Application.Interfaces.Repositories
     public interface IEventRepository : IRepository<Event>
     {
         Task<IEnumerable<Event>> GetFilteredEventsAsync(GetEventsRequest request);
+        IQueryable<Event> GetAllQueryable();
     }
 }

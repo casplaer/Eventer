@@ -83,3 +83,14 @@ body {
     border-radius: 5px;
     cursor: pointer;
 }
+
+.events-error-message {
+    font-weight: bold;
+    font-size: 24px;
+    color: red;
+}
+
+.loading-text{
+    font-weight: bold;
+    font-size: 20px;
+}

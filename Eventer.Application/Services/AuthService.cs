@@ -25,6 +25,11 @@ namespace Eventer.Application.Services
         {
             var user = await _unitOfWork.Users.GetByUserNameAsync(request.UserName);
 
+            if (user == null)
+            {
+                throw new Exception("No such user.");
+            }
+
             var result = _passwordHasher.Verify(request.Password, user.PasswordHash);
 
             if(result == false)
@@ -61,18 +66,15 @@ namespace Eventer.Application.Services
 
         public async Task<TokensResponse> RefreshTokensAsync(string refreshToken)
         {
-            // Проверяем валидность Refresh Token
             var user = await _unitOfWork.Users.GetByRefreshTokenAsync(refreshToken);
             if (user == null || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
             {
                 throw new UnauthorizedAccessException("Invalid or expired refresh token.");
             }
 
-            // Генерация новых токенов
             var newAccessToken = _jwtProvider.GenerateAccessToken(user);
             var newRefreshToken = _jwtProvider.GenerateRefreshToken();
 
-            // Обновление Refresh Token в базе
             user.RefreshToken = newRefreshToken;
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
             await _unitOfWork.Users.UpdateAsync(user);

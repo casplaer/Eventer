@@ -6,6 +6,7 @@ namespace Eventer.Application.Contracts.Events
         string? Title,
         DateOnly? Date,
         string? Venue,
-        EventCategory? Category
+        Guid? CategoryId,
+        int Page
         );
 }

@@ -19,6 +19,7 @@ namespace Eventer.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> CreateEvent([FromBody]CreateEventRequest request)
         {
             await _eventService.AddEventAsync(request);
@@ -30,7 +31,9 @@ namespace Eventer.API.Controllers
         [Authorize]
         public async Task<IActionResult> GetEvents([FromQuery]GetEventsRequest request)
         {
-            var eventDtos = (await _eventService.GetFilteredEventsAsync(request))
+            var data = await _eventService.GetFilteredEventsAsync(request);
+
+            var eventDtos = data.Items
                                 .Select(e => new EventDTO(e.Id, e.Title,
                                                           e.Description, e.StartDate,
                                                           e.StartTime, e.Venue,
@@ -40,9 +43,20 @@ namespace Eventer.API.Controllers
                                                           e.ImageURLs))
                                 .ToList();
 
+            var totalPages = data.TotalPages;
 
-            return Ok(new GetEventsResponse(eventDtos));
+            return Ok(new GetEventsResponse(eventDtos, totalPages));
         }
+
+        [HttpGet("{id}")]
+        [Authorize]
+        public async Task<IActionResult> GetEvent(Guid id)
+        {
+            var eventToReturn = await _eventService.GetEventByIdAsync(id);
+
+            return Ok(eventToReturn);
+        }
+
 
         [HttpPut]
         public async Task<IActionResult> UpdateEvent([FromBody]UpdateEventRequest request)
@@ -53,6 +67,7 @@ namespace Eventer.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> DeleteEvent(Guid id)
         {
             var isDeleted = await _eventService.DeleteEventAsync(id);

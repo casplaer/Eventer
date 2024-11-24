@@ -1,58 +1,89 @@
 import React, { useEffect, useState } from "react";
-import '../css/EventPage.css'
+import "../css/EventPage.css";
 import apiClient from "../api/apiClient";
 
 const EventsPage = () => {
     const [events, setEvents] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null); 
+    const [error, setError] = useState(null);
+    const [page, setPage] = useState(1); // Текущая страница
+    const [totalPages, setTotalPages] = useState(1); // Общее количество страниц
 
     const [filters, setFilters] = useState({
         title: "",
         date: "",
         venue: "",
-        category: "",
+        category:"",
     });
 
     const fetchEvents = async () => {
-        console.log("Вызов fetchEvents");
         try {
+            console.log(filters.category.id);
             const response = await apiClient.get("/events", {
                 params: {
                     Title: filters.title || null,
                     Date: filters.date || null,
                     Venue: filters.venue || null,
-                    Category: filters.category || null,
+                    CategoryId: filters.category?.id || null,
+                    page,
                 },
-            });
+                });
             setEvents(response.data.events);
+            setTotalPages(response.data.totalPages);
+            setLoading(false);
+        } catch (err) {
+            if (err.response?.status === 401) {
+                setError("Перенаправление...");
+            } else {
+                setError(err.response?.data?.message || "Ошибка при загрузке событий.");
+            }
             setLoading(false);
         }
-        catch (err) {
-            if (error.response?.status === 401) {
-                setError("Перенаправление...");
-            }
-            setError(err.response?.data?.message || "Ошибка при загрузке событий");
-            setLoading(false);
+    };
+
+    const fetchCategories = async () => {
+        try {
+            const response = await apiClient.get("/categories");
+            setCategories(response.data.categories);
+        } catch (err) {
+            console.error("Ошибка при загрузке категорий:", err.response?.data?.message || err.message);
+            setError("Не удалось загрузить категории.");
         }
     };
 
     useEffect(() => {
         fetchEvents();
-    }, []);
+        fetchCategories();
+    }, [page]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFilters((prev) => ({ ...prev, [name]: value }));
+
+        if (name === "category") {
+            const selectedCategory = categories.find((category) => category.id === value);
+            setFilters((prev) => ({ ...prev, category: selectedCategory || null }));
+        } else {
+            setFilters((prev) => ({ ...prev, [name]: value }));
+        }
     };
 
     const handleFilterSubmit = (e) => {
         e.preventDefault();
+        setPage(1);
         fetchEvents();
     };
 
-    if (loading) return <p>Загрузка событий...</p>;
-    if (error) return <p className="error-message">{error}</p>;
+    const handlePrevious = () => {
+        if (page > 1) setPage(page - 1);
+    };
+
+    const handleNext = () => {
+        if (page < totalPages) setPage(page + 1);
+    };
+
+    if (loading) return <p className="loading-text">Загрузка событий...</p>;
+    if (error) return <p className="events-error-message">{error}</p>;
 
     return (
         <div>
@@ -96,14 +127,15 @@ const EventsPage = () => {
                     <select
                         id="category"
                         name="category"
-                        value={filters.category}
+                        value={filters.category?.id || ""}
                         onChange={handleInputChange}
                     >
                         <option value="">Все категории</option>
-                        <option value="Music">Музыка</option>
-                        <option value="Sport">Спорт</option>
-                        <option value="Education">Образование</option>
-                        <option value="Art">Искусство</option>
+                        {categories.map((category) => (
+                            <option key={category.id} value={category.id}>
+                                {category.name}
+                            </option>
+                        ))}
                     </select>
                 </div>
                 <button type="submit" className="filter-button">Применить фильтры</button>
@@ -122,6 +154,16 @@ const EventsPage = () => {
                         <p>Максимум участников: {event.maxParticipants}</p>
                     </div>
                 ))}
+            </div>
+
+            <div className="pagination">
+                <button onClick={handlePrevious} disabled={page === 1}>
+                    Назад
+                </button>
+                <span>Страница {page} из {totalPages}</span>
+                <button onClick={handleNext} disabled={page === totalPages}>
+                    Вперед
+                </button>
             </div>
         </div>
     );

@@ -1,6 +1,6 @@
 ﻿using Eventer.Domain.Models;
 
-namespace Eventer.Application.Contracts
+namespace Eventer.Application.Contracts.Events
 {
     public record EventDTO(
         Guid Id,

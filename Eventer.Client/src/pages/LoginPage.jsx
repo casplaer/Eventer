@@ -17,7 +17,6 @@ const LoginPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError("");
 
         try {
             const response = await axios.post("https://localhost:7028/api/auth/login", {
@@ -29,8 +28,6 @@ const LoginPage = () => {
             const RefreshToken = response.data["refreshToken"];
             const user = response.data["user"];
 
-            console.log("Ответ сервера:", user);
-
             sessionStorage.setItem("accessToken", AccessToken);
             sessionStorage.setItem("refreshToken", RefreshToken);
 
@@ -38,7 +35,8 @@ const LoginPage = () => {
 
             navigate("/events");
         } catch (err) {
-            setError(err.response?.data?.error || "Произошла ошибка при входе. Проверьте данные.");
+            const errorMessage = err.response?.data?.message || "Произошла ошибка при входе. Проверьте данные.";
+            setError(errorMessage);
         }
     };
 

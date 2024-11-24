@@ -2,10 +2,14 @@
 import "../css/Sidebar.css";
 import { Link } from "react-router-dom";
 import { useAuth } from "../components/AuthContext";
+import { jwtDecode } from "jwt-decode";
 
 const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const { user, logout } = useAuth();
+
+    const token = sessionStorage.getItem("accessToken");
+    const userRole = token ? jwtDecode(token)["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] : null;
 
     const toggleSidebar = () => {
         setIsOpen(!isOpen);
@@ -22,7 +26,9 @@ const Sidebar = () => {
             <div className="sidebar">
                 {user && <p className="sidebar-greeting">Привет, {user.userName}!</p>}
                 <ul className="sidebar-links">
-                    <li><Link to="/admin">Администрированиe</Link></li>
+                    {userRole === "Admin" && (
+                        <li><Link to="/admin">Администрированиe</Link></li>
+                    )}
                     <li><Link to="/about">О проекте</Link></li>
                     <li><Link to="/events">Список событий</Link></li>
                     {user ? (

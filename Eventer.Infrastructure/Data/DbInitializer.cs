@@ -10,6 +10,28 @@ namespace Eventer.Infrastructure
         {
             context.Database.EnsureCreated();
 
+            if(context.Users.FirstOrDefault(u=>u.Role == UserRole.Admin) == null)
+            {
+                context.Users.AddAsync(User.Create
+                (
+                    id: Guid.NewGuid(),
+                    userName: "TestAdmin",
+                    email: "admin@mail.com",
+                    passwordHash: hasher.GenerateHash("123qwe")
+                ));
+            }
+
+            if(context.Users.FirstOrDefault(u => u.Role == UserRole.User) == null)
+            {
+                context.Users.AddAsync(User.Create
+                (
+                    id: Guid.NewGuid(),
+                    userName: "TestUser",
+                    email: "user@mail.com",
+                    passwordHash: hasher.GenerateHash("123qwe")
+                ));
+            }
+
             if (!context.Categories.Any())
             {
                 var testCategories = new List<EventCategory>

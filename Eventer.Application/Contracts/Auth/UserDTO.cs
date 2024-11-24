@@ -10,6 +10,6 @@ namespace Eventer.Application.Contracts.Auth
     public record UserDTO(
         string UserName,
         string Email,
-        ICollection<EventRegistration>? Registrations,
-        UserRole Role);
+        ICollection<EventRegistration>? Registrations
+        );
 }

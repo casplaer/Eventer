@@ -1,9 +1,11 @@
-﻿namespace Eventer.Domain.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Eventer.Domain.Models
 {
     public class Event
     {
         public Guid Id { get; set; }
-        
+
         public string Title { get; set; } = string.Empty; //Название
         public string Description { get; set; } = string.Empty; //Описание
         

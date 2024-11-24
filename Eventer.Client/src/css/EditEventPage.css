@@ -1,0 +1,60 @@
+.edit-event-page {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+    .edit-event-page h1 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+.edit-event-form .form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.edit-event-form label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.edit-event-form input,
+.edit-event-form textarea,
+.edit-event-form select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.edit-event-form .save-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+    .edit-event-form .save-button:hover {
+        background-color: #45a049;
+    }
+
+.error-message {
+    color: red;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.success-message {
+    color: green;
+    margin-bottom: 10px;
+    text-align: center;
+}
