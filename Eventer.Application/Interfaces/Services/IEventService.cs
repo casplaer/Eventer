@@ -9,6 +9,7 @@ namespace Eventer.Application.Interfaces.Services
         Task<IEnumerable<Event>> GetAllEventsAsync();
         Task<SingleEventResponse?> GetEventByIdAsync(Guid id);
         Task<PaginatedResult<Event>> GetFilteredEventsAsync(GetEventsRequest request);
+        Task<bool> IsUserEnrolledAsync(Guid eventId, Guid userId);
         Task EnrollOnEventAsync(EnrollRequest request, Guid userId);
         Task AddEventAsync(CreateEventRequest request);
         Task UpdateEventAsync(UpdateEventRequest request);

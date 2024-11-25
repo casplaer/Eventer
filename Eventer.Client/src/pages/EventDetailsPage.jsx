@@ -5,6 +5,7 @@ import apiClient from "../api/apiClient";
 
 const EventDetailsPage = () => {
     const { id } = useParams();
+    const [isEnrolled, setIsEnrolled] = useState(false);
     const [event, setEvent] = useState(null);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const imageIntervalRef = useRef(null);
@@ -20,7 +21,18 @@ const EventDetailsPage = () => {
             }
         };
 
+        const checkEnrollment = async () => {
+            try {
+                const response = await apiClient.get(`/events/${id}/isEnrolled`);
+                console.log(response.data);
+                setIsEnrolled(response.data.isEnrolled);
+            } catch (err) {
+                console.error("Ошибка при проверке записи:", err.response?.data || err.message);
+            }
+        };
+
         fetchEventDetails();
+        checkEnrollment();
     }, [id]);
 
     const handleEnroll = async () => {
@@ -112,10 +124,20 @@ const EventDetailsPage = () => {
                 {event.maxParticipants - event.currentRegistrations}/
                 {event.maxParticipants}
             </p>
-            <button className="register-button" onClick={handleEnroll}>Записаться</button>
-            <button className="back-button" onClick={handleBackButton}>
-                Назад
-            </button>
+            <div className="button-container">
+                {isEnrolled ? (
+                    <button className="edit-button" onClick={handleEdit}>
+                        Редактировать запись
+                    </button>
+                ) : (
+                    <button className="register-button" onClick={handleEnroll}>
+                        Записаться
+                    </button>
+                )}
+                <button className="back-button" onClick={handleBackButton}>
+                    Назад
+                </button>
+            </div>
         </div>
     );
 };

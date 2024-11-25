@@ -11,6 +11,8 @@ const Sidebar = () => {
     const token = sessionStorage.getItem("accessToken");
     const userRole = token ? jwtDecode(token)["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] : null;
 
+    console.log(userRole);
+
     const toggleSidebar = () => {
         setIsOpen(!isOpen);
     };

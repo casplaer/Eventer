@@ -98,5 +98,16 @@ namespace Eventer.API.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("{eventId}/isEnrolled")]
+        [Authorize]
+        public async Task<IActionResult> IsUserEnrolled(Guid eventId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isEnrolled = await _eventService.IsUserEnrolledAsync(eventId, Guid.Parse(userId));
+
+            return Ok(new { IsEnrolled = isEnrolled });
+        }
+
     }
 }

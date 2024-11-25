@@ -1,8 +1,7 @@
 ﻿using Eventer.Application.Interfaces.Auth;
 using Eventer.Domain.Models;
-using Eventer.Infrastructure.Data;
 
-namespace Eventer.Infrastructure
+namespace Eventer.Infrastructure.Data
 {
     public static class DbInitializer
     {
@@ -10,18 +9,20 @@ namespace Eventer.Infrastructure
         {
             context.Database.EnsureCreated();
 
-            if(context.Users.FirstOrDefault(u=>u.Role == UserRole.Admin) == null)
+            if (context.Users.FirstOrDefault(u => u.Role == UserRole.Admin) == null)
             {
-                context.Users.AddAsync(User.Create
+                var adminUser = User.Create
                 (
                     id: Guid.NewGuid(),
                     userName: "TestAdmin",
                     email: "admin@mail.com",
                     passwordHash: hasher.GenerateHash("123qwe")
-                ));
+                );
+                adminUser.Role = UserRole.Admin;
+                context.Users.AddAsync(adminUser);
             }
 
-            if(context.Users.FirstOrDefault(u => u.Role == UserRole.User) == null)
+            if (context.Users.FirstOrDefault(u => u.Role == UserRole.User) == null)
             {
                 context.Users.AddAsync(User.Create
                 (
@@ -41,7 +42,7 @@ namespace Eventer.Infrastructure
                         Name = "Тестовая категория",
                         Description = "Тестовое описание"
                     },
-                    
+
                     new EventCategory
                     {
                         Name = "Test category",
@@ -55,7 +56,7 @@ namespace Eventer.Infrastructure
 
             var firstCategory = context.Categories.FirstOrDefault();
 
-            if(!context.Events.Any())
+            if (!context.Events.Any())
             {
                 var testEvents = new List<Event>
                 {
@@ -111,7 +112,7 @@ namespace Eventer.Infrastructure
                 context.SaveChanges();
             }
 
-            if(!context.Users.Any())
+            if (!context.Users.Any())
             {
                 var testUser = User.Create(Guid.NewGuid(), "TestUser", hasher.GenerateHash("123qwe"), "test@mail.com");
 

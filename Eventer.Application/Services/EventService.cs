@@ -315,5 +315,14 @@ namespace Eventer.Application.Services
             await _unitOfWork.Registrations.AddAsync(registrationToCreate);
             await _unitOfWork.SaveChangesAsync();
         }
+
+        public async Task<bool> IsUserEnrolledAsync(Guid eventId, Guid userId)
+        {
+            var registration = await _unitOfWork.Registrations
+                .FirstOrDefaultAsync(r => r.EventId == eventId && r.UserId == userId);
+
+            return registration != null;
+        }
+
     }
 }
