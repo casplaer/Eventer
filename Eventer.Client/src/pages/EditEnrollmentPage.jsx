@@ -39,7 +39,7 @@ const EditEnrollmentPage = () => {
     useEffect(() => {
         const fetchEnrollment = async () => {
             try {
-                const response = await apiClient.get(`/events/enrollment/${enrollmentId}`);
+                const response = await apiClient.get(`/enrollments/${enrollmentId}`);
 
                 const enrollment = response.data;
 
@@ -81,7 +81,7 @@ const EditEnrollmentPage = () => {
         setSuccess(null);
 
         try {
-            await apiClient.put(`events/enrollment/edit`, formData);
+            await apiClient.put(`/enrollments`, formData);
             setSuccess("Запись успешно обновлена!");
             setTimeout(() => navigate("/events"), 2000);
         } catch (err) {
@@ -92,7 +92,7 @@ const EditEnrollmentPage = () => {
 
     const handleDelete = async () => {
         try {
-            await apiClient.delete(`/events/enrollment/${enrollmentId}`);
+            await apiClient.delete(`/enrollments/${enrollmentId}`);
             navigate(`/details/${eventId}`);
         } catch (err) {
             console.error("Ошибка при удалении записи:", err.response?.data || err.message);

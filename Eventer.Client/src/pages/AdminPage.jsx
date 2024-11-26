@@ -109,28 +109,35 @@ const AdminPage = () => {
                 <p className="no-events-message">На данный момент событий нет.</p>
             ) : (
                 <>
-                    <div className="events-list">
-                        {events.map((event) => (
-                            <div key={event.id} className="event-card">
-                                <h2>{event.title}</h2>
-                                <p className="event-id">ID: {event.id}</p>
-                                <div className="event-actions">
-                                    <button
-                                        className="edit-button"
-                                        onClick={() => handleEditClick(event.id)}
-                                    >
-                                        Редактировать
-                                    </button>
-                                    <button
-                                        className="delete-button"
-                                        onClick={() => handleDeleteClick(event)}
-                                    >
-                                        Удалить
-                                    </button>
+                        <div className="events-list">
+                            {events.map((event) => (
+                                <div key={event.id} className="event-card">
+                                    <h2>{event.title}</h2>
+                                    <p className="event-id">ID: {event.id}</p>
+                                    <div className="event-actions">
+                                        <button
+                                            className="edit-button"
+                                            onClick={() => handleEditClick(event.id)}
+                                        >
+                                            Редактировать
+                                        </button>
+                                        <button
+                                            className="view-participants-button"
+                                            onClick={() => navigate(`/enrolled-users/${event.id}`)}
+                                        >
+                                            Просмотреть участников
+                                        </button>
+                                        <button
+                                            className="delete-button"
+                                            onClick={() => handleDeleteClick(event)}
+                                        >
+                                            Удалить
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+
                     <div className="pagination">
                         <button onClick={handlePrevious} disabled={page === 1}>
                             Назад

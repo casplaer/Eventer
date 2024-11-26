@@ -13,7 +13,8 @@ import EditEventPage from './pages/EditEventPage';
 import EventDetailsPage from './pages/EventDetailsPage';
 import EnrollPage from './pages/EnrollPage';
 import EditEnrollmentPage from './pages/EditEnrollmentPage';
-import UserEventsPage from './pages/UserEventsPage'
+import UserEventsPage from './pages/UserEventsPage';
+import EnrolledUsersPage from './pages/EnrolledUsersPage';
 
 const AuthWrapper = ({ children }) => {
     const navigate = useNavigate();
@@ -40,6 +41,7 @@ function App() {
                             <Route path="/enroll/:id" element={< EnrollPage />} />
                             <Route path="/edit-enrollment/:enrollmentId" element={<EditEnrollmentPage />} />
                             <Route path="/your-events" element={<UserEventsPage />} />
+                            <Route path="/enrolled-users/:id" element={<EnrolledUsersPage />} />
                         </Routes>
                     </div>
                 </div>

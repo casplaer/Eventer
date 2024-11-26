@@ -55,6 +55,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();//Репозиторий поль
 builder.Services.AddScoped<IEventService, EventService>();//Сервис для событий
 builder.Services.AddScoped<ICategoryService, CategoryService>();//Сервис для категорий
 builder.Services.AddScoped<IAuthService,  AuthService>();//Сервис для аутентификации
+builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();//Сервис для записей на события
 
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();//Хэшер
 

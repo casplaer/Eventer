@@ -35,7 +35,7 @@ const EventDetailsPage = () => {
 
         const checkEnrollment = async () => {
             try {
-                const response = await apiClient.get(`/events/${id}/isEnrolled`);
+                const response = await apiClient.get(`/enrollments/${id}/isEnrolled`);
                 console.log(response.data);
                 setIsEnrolled(response.data.isEnrolled);
                 setEnrollmentId(response.data.id);

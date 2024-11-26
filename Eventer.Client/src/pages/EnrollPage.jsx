@@ -67,7 +67,7 @@ const EnrollPage = () => {
         setSuccess(null);
 
         try {
-            await apiClient.post("/events/enroll", formData);
+            await apiClient.post("/enrollments", formData);
             setSuccess("Вы успешно записались на событие!");
             setTimeout(() => {
                 navigate("/events");
