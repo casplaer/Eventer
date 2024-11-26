@@ -47,6 +47,17 @@ const AboutPage = () => {
                 </div>
             </section>
 
+            <section className="test-users">
+                <h2 className="section-title">Тестовые пользователи</h2>
+                <p>
+                    Для проверки функционала приложения доступны следующие тестовые учетные записи:
+                </p>
+                <ul className="test-users-list">
+                    <li><strong>Администратор:</strong> TestAdmin / 123qwe</li>
+                    <li><strong>Обычный пользователь:</strong> TestUser / 123qwe</li>
+                </ul>
+            </section>
+
             <section className="additional-info">
                 <h2 className="section-title">Технические особенности</h2>
                 <ul className="features-list">
