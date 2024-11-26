@@ -1,9 +1,12 @@
 ﻿using Eventer.Application.Contracts;
+using Eventer.Application.Contracts.Enrollments;
 using Eventer.Application.Contracts.Events;
 using Eventer.Application.Interfaces.Repositories;
 using Eventer.Application.Interfaces.Services;
 using Eventer.Domain.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.CompilerServices;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Eventer.Application.Services
 {
@@ -119,7 +122,7 @@ namespace Eventer.Application.Services
             catch (Exception ex)
             {
                 Console.WriteLine($"Ошибка в GetFilteredEventsAsync: {ex.Message}");
-                throw;
+                return null;
             }
         }
 
@@ -316,13 +319,120 @@ namespace Eventer.Application.Services
             await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task<bool> IsUserEnrolledAsync(Guid eventId, Guid userId)
+        public async Task<Guid> IsUserEnrolledAsync(Guid eventId, Guid userId)
         {
-            var registration = await _unitOfWork.Registrations
-                .FirstOrDefaultAsync(r => r.EventId == eventId && r.UserId == userId);
+            var enrollment = (await _unitOfWork.Registrations.GetAllAsync()).FirstOrDefault(r => r.EventId == eventId && r.UserId == userId);
+            if (enrollment == null)
+                throw new Exception();
 
-            return registration != null;
+            return enrollment.Id;
         }
 
+        public async Task UpdateEnrollmentAsync(UpdateEnrollRequest request)
+        {
+            var enrollmentToUpdate = await _unitOfWork.Registrations.GetByIdAsync(request.EnrollmentId);
+            if (enrollmentToUpdate == null)
+                throw new Exception("No enrollment to update.");
+
+            if (!string.IsNullOrEmpty(request.Name))
+                enrollmentToUpdate.Name = request.Name;
+            else throw new Exception("Некорректное значение имени.");
+
+            if (!string.IsNullOrEmpty(request.Surname))
+                enrollmentToUpdate.Surname = request.Surname;
+            else throw new Exception("Некорректное значение фамилии."); ;
+            
+            enrollmentToUpdate.DateOfBirth = request.DateOfBirth;
+
+            await _unitOfWork.Registrations.UpdateAsync(enrollmentToUpdate);
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        public async Task<SingleEnrollmentResponse?> GetSingleEnrollmentById(Guid id)
+        {
+            var enrollment = await _unitOfWork.Registrations.GetByIdAsync(id);
+            if(enrollment == null)
+            {
+                return null;
+            }
+            return new SingleEnrollmentResponse(
+                enrollment.Id,
+                enrollment.EventId,
+                enrollment.Name,
+                enrollment.Surname,
+                enrollment.Email,
+                enrollment.DateOfBirth
+                );
+        }
+
+        public async Task<bool> DeleteEnrollmentAsync(Guid id)
+        {
+            var enrollment = await _unitOfWork.Registrations.GetByIdAsync(id);
+
+            if (enrollment == null)
+            {
+                return false; 
+            }
+
+            await _unitOfWork.Registrations.DeleteAsync(id);
+
+            await _unitOfWork.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<PaginatedResult<Event>> GetUsersEventsAsync(UsersEventsRequest request)
+        {
+            var user = await _unitOfWork.Users.GetByIdAsync(request.UserId);
+
+            int page = request.Page;
+
+            if (page < 1) page = 1;
+
+            if (user == null)
+            {
+                throw new KeyNotFoundException($"Пользователь с ID {request.UserId} не найден.");
+            }
+
+            List<Guid> eventIds = [];
+
+            if(user.EventRegistrations != null)
+            {
+                eventIds = user.EventRegistrations.Select(reg => reg.EventId).Distinct().ToList();
+            }
+
+            if (!eventIds.Any())
+            {
+                return new PaginatedResult<Event> {
+                                    Items= new List<Event>(), 
+                                    TotalCount = 0, 
+                                    TotalPages = 1 
+                                    };
+            }
+
+            List<Event> usersEvents = [];
+
+            foreach (var eventId in eventIds)
+            {
+                var eventToAdd = await _unitOfWork.Events.GetByIdAsync(eventId);
+                usersEvents.Add(eventToAdd!);
+            }
+
+            int totalPages = (int)Math.Ceiling((double)usersEvents.Count() / pageSize);
+
+            if (totalPages == 0) totalPages = 1;
+
+            usersEvents = usersEvents
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return new PaginatedResult<Event>
+            {
+                Items= usersEvents,
+                TotalCount = usersEvents.Count(),
+                TotalPages = page,
+            };
+        }
     }
 }

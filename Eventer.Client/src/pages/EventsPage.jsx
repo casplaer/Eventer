@@ -144,29 +144,32 @@ const EventsPage = () => {
                 <button type="submit" className="filter-button">Применить фильтры</button>
             </form>
 
-            <div className="events-list">
-                {events.map((event) => (
-                    <div key={event.id} className="event-card">
-                        <h2
-                            className="event-title"
-                            onClick={() => (window.location.href = `/details/${event.id}`)}
-                        >
-                            {event.title}
-                        </h2>
-                        <p className="event-address">Адрес: {event.venue}</p>
-                        <div className="event-footer">
-                            <span className="event-participants">
-                                {event.currentRegistrations}/{event.maxParticipants}
-                            </span>
-                            <img
-                                src={usersIcon}
-                                alt="Icon"
-                                className="event-icon"
-                            />
+            {events.length === 0 ? (
+                <p className="no-events-message">На данный момент нет подходящих событий.</p>
+            ) : (
+                <div className="events-list">
+                    {events.map((event) => (
+                        <div key={event.id} className="event-card">
+                            <h2
+                                className="event-title"
+                                onClick={() => (window.location.href = `/details/${event.id}`)}
+                            >
+                                {event.title}
+                            </h2>
+                            <p className="event-address">Адрес: {event.venue}</p>
+                            <div className="event-footer">
+                                <span className="event-participants">
+                                    {event.currentRegistrations}/{event.maxParticipants}
+                                </span>
+                                <img
+                                    src={usersIcon}
+                                    alt="Icon"
+                                    className="event-icon"
+                                />
+                            </div>
                         </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>)}
 
             <div className="pagination">
                 <button onClick={handlePrevious} disabled={page === 1}>
@@ -176,7 +179,7 @@ const EventsPage = () => {
                 <button onClick={handleNext} disabled={page === totalPages}>
                     Вперед
                 </button>
-            </div>
+                    </div>
         </div>
     );
 };

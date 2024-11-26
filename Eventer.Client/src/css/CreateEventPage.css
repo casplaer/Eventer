@@ -38,6 +38,7 @@
         border: 1px solid #ccc;
         border-radius: 5px;
         font-family: "Rubik", sans-serif;
+        width: 100%;
     }
 
 #description{

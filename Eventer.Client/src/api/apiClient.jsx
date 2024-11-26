@@ -30,15 +30,12 @@ apiClient.interceptors.response.use(
                 // Запрос на эндпоинт /refresh
                 const refreshToken = sessionStorage.getItem("refreshToken");
 
-                debugger;
-
                 const refreshResponse = await axios.post(
                     "https://localhost:7028/api/auth/refresh",
                     { refreshToken }
                 );
 
-                const newAccessToken = refreshResponse.data; // Убедитесь, что сервер возвращает правильное имя
-                debugger;
+                const newAccessToken = refreshResponse.data;
 
                 // Новый Access Token в sessionStorage
                 sessionStorage.setItem("accessToken", newAccessToken);

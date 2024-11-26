@@ -1,0 +1,68 @@
+.user-events-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+    .user-events-page h1 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+.error-message {
+    color: red;
+    text-align: center;
+}
+
+.events-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.event-card {
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .event-card:hover {
+        background-color: #f0f8ff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+.event-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.event-date,
+.event-venue {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #555;
+}
+
+.event-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.event-registrations {
+    margin-left: auto;
+    margin-right: 5px;
+    font-size: 14px;
+    color: #333;
+}
+
+.users-icon {
+    width: 20px;
+    height: 20px;
+}

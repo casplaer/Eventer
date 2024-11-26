@@ -33,6 +33,9 @@ const Sidebar = () => {
                     )}
                     <li><Link to="/about">О проекте</Link></li>
                     <li><Link to="/events">Список событий</Link></li>
+                    {user && (
+                        <li><Link to="/your-events">Мои события</Link></li>
+                    )}
                     {user ? (
                         <li>
                             <button onClick={logout} className="logout-button">Выйти</button>

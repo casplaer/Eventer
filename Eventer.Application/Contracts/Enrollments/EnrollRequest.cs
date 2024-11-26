@@ -1,4 +1,4 @@
-﻿namespace Eventer.Application.Contracts.Events
+﻿namespace Eventer.Application.Contracts.Enrollments
 {
     public record EnrollRequest(
         Guid EventId,

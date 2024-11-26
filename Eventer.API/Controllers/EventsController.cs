@@ -1,4 +1,5 @@
-﻿using Eventer.Application.Contracts.Events;
+﻿using Eventer.Application.Contracts.Enrollments;
+using Eventer.Application.Contracts.Events;
 using Eventer.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -6,7 +7,6 @@ using System.Security.Claims;
 
 namespace Eventer.API.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class EventsController : Controller
@@ -28,11 +28,23 @@ namespace Eventer.API.Controllers
             return Ok();
         }
 
+        [HttpGet("throw")]
+        public IActionResult ThrowException()
+        {
+            throw new InvalidOperationException("Произошла ошибка!");
+        }
+
+
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> GetEvents([FromQuery]GetEventsRequest request)
         {
             var data = await _eventService.GetFilteredEventsAsync(request);
+
+            if(data == null)
+            {
+                return Ok(new GetEventsResponse(new List<EventDTO>(), 1));
+            }
 
             var eventDtos = data.Items
                                 .Select(e => new EventDTO(e.Id, e.Title,
@@ -50,15 +62,28 @@ namespace Eventer.API.Controllers
             return Ok(new GetEventsResponse(eventDtos, totalPages));
         }
 
-        [HttpPost("enroll")]
+        [HttpGet("your-events")]
         [Authorize]
-        public async Task<IActionResult> EnrollOnEvent([FromBody] EnrollRequest request)
+        public async Task<IActionResult> GetUsersEvents([FromQuery] UsersEventsRequest request)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var data = await _eventService.GetUsersEventsAsync(request);
 
-            await _eventService.EnrollOnEventAsync(request, new Guid(userId!));
-            return Ok();
+            var eventDtos = data.Items
+                                .Select(e => new EventDTO(e.Id, e.Title,
+                                                          e.Description, e.StartDate,
+                                                          e.StartTime, e.Venue,
+                                                          e.Latitude, e.Longitude,
+                                                          e.Category,
+                                                          e.MaxParticipants,
+                                                          e.ImageURLs,
+                                                          e.Registrations.Count))
+                                .ToList();
+
+            var totalPages = data.TotalPages;
+
+            return Ok(new GetEventsResponse(eventDtos, totalPages));
         }
+
 
         [HttpGet("{id}")]
         [Authorize]
@@ -73,7 +98,6 @@ namespace Eventer.API.Controllers
 
             return Ok(eventToReturn);
         }
-
 
         [HttpPut]
         [Authorize(Policy = "AdminPolicy")]
@@ -99,15 +123,70 @@ namespace Eventer.API.Controllers
             return NoContent();
         }
 
+        [HttpPost("enroll")]
+        [Authorize]
+        public async Task<IActionResult> EnrollOnEvent([FromBody] EnrollRequest request)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            await _eventService.EnrollOnEventAsync(request, new Guid(userId!));
+            return Ok();
+        }
+
         [HttpGet("{eventId}/isEnrolled")]
         [Authorize]
         public async Task<IActionResult> IsUserEnrolled(Guid eventId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var isEnrolled = await _eventService.IsUserEnrolledAsync(eventId, Guid.Parse(userId));
-
-            return Ok(new { IsEnrolled = isEnrolled });
+            try
+            {
+                var enrollmentId = await _eventService.IsUserEnrolledAsync(eventId, Guid.Parse(userId));
+                return Ok(new { IsEnrolled = true,
+                                Id = enrollmentId});
+            }
+            catch(Exception ex)
+            {
+                return Ok(new {IsEnrolled = false});
+            }
         }
 
+        [HttpPut("enrollment/edit")]
+        [Authorize]
+        public async Task<IActionResult> UpdateEnrollment([FromBody]UpdateEnrollRequest request)
+        {
+            try
+            {
+                await _eventService.UpdateEnrollmentAsync(request);
+                return Ok();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new { Message = "Что-то пошло не так..." });
+            }
+
+        }
+
+        [HttpGet("enrollment/{id}")]
+        [Authorize]
+        public async Task<IActionResult> GetSingleEnrollment(Guid id)
+        {
+            var enrollment = await _eventService.GetSingleEnrollmentById(id);
+
+            return Ok(enrollment);
+        }
+
+        [HttpDelete("enrollment/{id}")]
+        [Authorize]
+        public async Task<IActionResult> DeleteEnrollment(Guid id)
+        {
+            var result = await _eventService.DeleteEnrollmentAsync(id);
+            
+            if(!result)
+            {
+                return BadRequest(new { Message = "Не удалось удалить запись." });
+            }
+                
+            return NoContent();
+        }
     }
 }

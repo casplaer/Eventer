@@ -10,12 +10,24 @@ const EventDetailsPage = () => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const imageIntervalRef = useRef(null);
     const navigate = useNavigate();
+    const [enrollmentId, setEnrollmentId] = useState();
 
     useEffect(() => {
         const fetchEventDetails = async () => {
             try {
                 const response = await apiClient.get(`/events/${id}`);
-                setEvent(response.data);
+                const eventData = response.data;
+
+                if (eventData.images && eventData.images.length > 0) {
+                    const cache = await caches.open("event-images-cache");
+                    eventData.images.forEach(async (imageUrl) => {
+                        const cachedResponse = await cache.match(imageUrl);
+                        if (!cachedResponse) {
+                            await cache.add(imageUrl);
+                        }
+                    });
+                }
+                setEvent(eventData);
             } catch (err) {
                 console.error("Ошибка при загрузке события:", err);
             }
@@ -26,6 +38,7 @@ const EventDetailsPage = () => {
                 const response = await apiClient.get(`/events/${id}/isEnrolled`);
                 console.log(response.data);
                 setIsEnrolled(response.data.isEnrolled);
+                setEnrollmentId(response.data.id);
             } catch (err) {
                 console.error("Ошибка при проверке записи:", err.response?.data || err.message);
             }
@@ -41,7 +54,11 @@ const EventDetailsPage = () => {
 
     const handleBackButton = () => {
         navigate("/events");
-    }
+    };
+
+    const handleEdit = () => {
+        navigate(`/edit-enrollment/${enrollmentId}`);
+    };
 
     useEffect(() => {
         if (event?.images?.length) {
@@ -77,9 +94,16 @@ const EventDetailsPage = () => {
 
     if (!event) return <p>Загрузка события...</p>;
 
+    const isEventFull = event.maxParticipants - event.currentRegistrations <= 0;
+
     return (
         <div className="event-details-page">
             <h1 className="event-details-title">{event.title}</h1>
+            {isEnrolled && (
+                <p className="enrolled-message">
+                    Вы уже зарегистрированы на это событие
+                </p>
+            )}
             <h2>Что Вас ждёт:</h2>
             <p className="event-description">{event.description}</p>
 
@@ -119,25 +143,31 @@ const EventDetailsPage = () => {
                     </div>
                 </div>
             )}
-            <p className="remaining-seats" onClick={handleEnroll}>
+            <p className="remaining-seats">
                 Осталось свободных мест:{" "}
                 {event.maxParticipants - event.currentRegistrations}/
                 {event.maxParticipants}
             </p>
+            {isEventFull && (
+                <p className="full-event-message">
+                    На это событие не осталось свободных мест
+                </p>
+            )}
             <div className="button-container">
                 {isEnrolled ? (
                     <button className="edit-button" onClick={handleEdit}>
                         Редактировать запись
                     </button>
-                ) : (
+                ) : !isEventFull ? (
                     <button className="register-button" onClick={handleEnroll}>
                         Записаться
                     </button>
-                )}
+                ) : null}
                 <button className="back-button" onClick={handleBackButton}>
                     Назад
                 </button>
             </div>
+
         </div>
     );
 };

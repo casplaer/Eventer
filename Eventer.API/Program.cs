@@ -4,6 +4,7 @@ using Eventer.Application.Interfaces.Services;
 using Eventer.Application.Services;
 using Eventer.Infrastructure;
 using Eventer.Infrastructure.Data;
+using Eventer.Infrastructure.Middleware;
 using Eventer.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -128,6 +129,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors("AllowReactClient");
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

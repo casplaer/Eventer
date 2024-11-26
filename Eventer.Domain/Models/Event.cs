@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Eventer.Domain.Models
+﻿namespace Eventer.Domain.Models
 {
     public class Event
     {

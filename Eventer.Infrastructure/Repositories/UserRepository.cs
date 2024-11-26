@@ -22,6 +22,11 @@ namespace Eventer.Infrastructure.Repositories
             return user;
         }
 
+        public override Task<User?> GetByIdAsync(Guid id)
+        {
+            return _context.Users.Include(u=>u.EventRegistrations).FirstOrDefaultAsync(u=>u.Id == id);
+        }
+
         public async Task<User> GetByUserNameAsync(string userName)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);

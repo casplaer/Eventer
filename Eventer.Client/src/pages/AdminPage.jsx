@@ -8,7 +8,7 @@ const AdminPage = () => {
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [page, setPage] = useState(1); 
+    const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [showPopup, setShowPopup] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
@@ -28,7 +28,7 @@ const AdminPage = () => {
         try {
             const response = await apiClient.get("/events", {
                 params: {
-                    page, 
+                    page,
                 },
             });
             setEvents(response.data.events);
@@ -49,7 +49,7 @@ const AdminPage = () => {
     };
 
     const handleDeleteClick = (event) => {
-        setSelectedEvent(event); 
+        setSelectedEvent(event);
         setShowPopup(true);
     };
 
@@ -79,13 +79,12 @@ const AdminPage = () => {
             setShowPopup(false);
             setSelectedEvent(null);
 
-            fetchEvents(page); 
+            fetchEvents(page);
         } catch (err) {
             console.error("Ошибка при удалении события:", err.response?.data || err.message);
             setError("Не удалось удалить событие. Попробуйте снова.");
         }
     };
-
 
     const handleNext = () => {
         if (page < totalPages) setPage(page + 1);
@@ -96,7 +95,7 @@ const AdminPage = () => {
     };
 
     if (loading) return <p>Загрузка событий...</p>;
-    if (error) return <p className="error-message">{error}</p>;
+    if (error) return <p className="admin-error-message">{error}</p>;
 
     return (
         <div className="admin-page">
@@ -106,37 +105,43 @@ const AdminPage = () => {
                 Создать событие
             </button>
 
-            <div className="events-list">
-                {events.map((event) => (
-                    <div key={event.id} className="event-card">
-                        <h2>{event.title}</h2>
-                        <p className="event-id">ID: {event.id}</p>
-                        <div className="event-actions">
-                            <button
-                                className="edit-button"
-                                onClick={() => handleEditClick(event.id)}
-                            >
-                                Редактировать
-                            </button>
-                            <button
-                                className="delete-button"
-                                onClick={() => handleDeleteClick(event)}
-                            >
-                                Удалить
-                            </button>
-                        </div>
+            {events.length === 0 ? (
+                <p className="no-events-message">На данный момент событий нет.</p>
+            ) : (
+                <>
+                    <div className="events-list">
+                        {events.map((event) => (
+                            <div key={event.id} className="event-card">
+                                <h2>{event.title}</h2>
+                                <p className="event-id">ID: {event.id}</p>
+                                <div className="event-actions">
+                                    <button
+                                        className="edit-button"
+                                        onClick={() => handleEditClick(event.id)}
+                                    >
+                                        Редактировать
+                                    </button>
+                                    <button
+                                        className="delete-button"
+                                        onClick={() => handleDeleteClick(event)}
+                                    >
+                                        Удалить
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
                     </div>
-                ))}
-            </div>
-            <div className="pagination">
-                <button onClick={handlePrevious} disabled={page === 1}>
-                    Назад
-                </button>
-                <span>Страница {page} из {totalPages}</span>
-                <button onClick={handleNext} disabled={page === totalPages}>
-                    Вперед
-                </button>
-            </div>
+                    <div className="pagination">
+                        <button onClick={handlePrevious} disabled={page === 1}>
+                            Назад
+                        </button>
+                        <span>Страница {page} из {totalPages}</span>
+                        <button onClick={handleNext} disabled={page === totalPages}>
+                            Вперед
+                        </button>
+                    </div>
+                </>
+            )}
 
             {showPopup && selectedEvent && (
                 <div className="popup-overlay">
