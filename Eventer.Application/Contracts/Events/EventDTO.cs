@@ -9,8 +9,6 @@ namespace Eventer.Application.Contracts.Events
         DateOnly StartDate,
         TimeOnly StartTime,
         string Venue,
-        double Latitude,
-        double Longitude,
         EventCategory Category,
         int MaxParticipants,
         List<string>? ImageURLs,

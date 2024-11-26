@@ -11,8 +11,6 @@
         public TimeOnly StartTime { get; set; } //Время проведения
         
         public string Venue {  get; set; } = string.Empty; //Место проведения
-        public double Latitude { get; set; } //Ширина
-        public double Longitude { get; set; } //Высота
         
         public EventCategory Category { get; set; } //Категория
 

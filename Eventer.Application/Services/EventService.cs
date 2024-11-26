@@ -34,12 +34,12 @@ namespace Eventer.Application.Services
         {
             var eventToReturn = await _unitOfWork.Events.GetByIdAsync(id);
 
-            if (eventToReturn == null)
+/*            if (eventToReturn == null)
             {
                 return null;
-            }
+            }*/
 
-            int regs = eventToReturn.Registrations.Count;
+            int regs = eventToReturn.Registrations.Count; //Middleware for exceptions example.
 
             return new SingleEventResponse(
                 eventToReturn.Id,
@@ -73,6 +73,8 @@ namespace Eventer.Application.Services
                 if (page < 1) page = 1;
 
                 var query = _unitOfWork.Events.GetAllQueryable();
+
+                var a = query.ToList();
 
                 if (!query.Any())
                 {
@@ -161,8 +163,6 @@ namespace Eventer.Application.Services
                 StartDate = request.StartDate,
                 StartTime = request.StartTime,
                 Venue = request.Venue,
-                Latitude = request.Latitude,
-                Longitude = request.Longitude,
                 Category = category,
                 MaxParticipants = request.MaxParticipants,
                 ImageURLs = imagePaths
@@ -192,12 +192,6 @@ namespace Eventer.Application.Services
 
             if (!string.IsNullOrEmpty(request.Venue))
                 eventToUpdate.Venue = request.Venue;
-
-            if (request.Latitude.HasValue)
-                eventToUpdate.Latitude = request.Latitude.Value;
-
-            if (request.Longitude.HasValue)
-                eventToUpdate.Longitude = request.Longitude.Value;
             
             if(request.Category != null)
             {
@@ -343,7 +337,5 @@ namespace Eventer.Application.Services
                 TotalPages = page,
             };
         }
-
-
     }
 }

@@ -11,6 +11,7 @@ const EventDetailsPage = () => {
     const imageIntervalRef = useRef(null);
     const navigate = useNavigate();
     const [enrollmentId, setEnrollmentId] = useState();
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchEventDetails = async () => {
@@ -29,6 +30,7 @@ const EventDetailsPage = () => {
                 }
                 setEvent(eventData);
             } catch (err) {
+                setError("Ошибка при загрузке события. Попробуйте позже.");
                 console.error("Ошибка при загрузке события:", err);
             }
         };
@@ -36,10 +38,10 @@ const EventDetailsPage = () => {
         const checkEnrollment = async () => {
             try {
                 const response = await apiClient.get(`/enrollments/${id}/isEnrolled`);
-                console.log(response.data);
                 setIsEnrolled(response.data.isEnrolled);
                 setEnrollmentId(response.data.id);
             } catch (err) {
+                setError("Ошибка при проверке записи. Попробуйте позже.");
                 console.error("Ошибка при проверке записи:", err.response?.data || err.message);
             }
         };
@@ -91,6 +93,10 @@ const EventDetailsPage = () => {
             handleNextImage();
         }, 10000);
     };
+
+    if (error) {
+        return <p className="event-error-message">{error}</p>;
+    }
 
     if (!event) return <p>Загрузка события...</p>;
 
@@ -167,7 +173,6 @@ const EventDetailsPage = () => {
                     Назад
                 </button>
             </div>
-
         </div>
     );
 };
