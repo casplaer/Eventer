@@ -31,11 +31,11 @@ if (app.Environment.IsDevelopment())
     //app.UseSwaggerUI();
 }
 
+app.UseStaticFiles();
 app.UseHttpsRedirection();
 app.UseCors("AllowReactClient");
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseStaticFiles();
 
 app.UseCustomMiddlewares();
 

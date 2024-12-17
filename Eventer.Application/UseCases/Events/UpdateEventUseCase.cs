@@ -5,6 +5,7 @@ using Eventer.Domain.Contracts.Events;
 using Eventer.Domain.Interfaces.Repositories;
 using Eventer.Domain.Models;
 using FluentValidation;
+using Microsoft.AspNetCore.Http;
 
 namespace Eventer.Application.UseCases.Events
 {
@@ -56,11 +57,14 @@ namespace Eventer.Application.UseCases.Events
                 eventToUpdate.Category = category;
             }
 
-            var imagePaths = request.Images != null && request.Images.Any()
-                    ? await _imageService.UpdateImagesAsync(request.Images, 
-                    request.ExistingImages, 
-                    request.RemovedImages, _uploadPath, _httpClient.BaseAddress!.ToString(), "events")
-                    : new List<string>();
+            var imagePaths = await _imageService.UpdateImagesAsync(
+                newImages: request.Images ?? Enumerable.Empty<IFormFile>(),  
+                existingImages: request.ExistingImages ?? new List<string>(), 
+                removedImages: request.RemovedImages ?? new List<string>(),   
+                uploadPath: _uploadPath,
+                baseUrl: new Uri(_httpClient.BaseAddress!, "events").ToString(),
+                imageType: "events"
+            );
 
             eventToUpdate.ImageURLs = imagePaths;
 

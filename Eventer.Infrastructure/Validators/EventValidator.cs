@@ -15,8 +15,8 @@ namespace Eventer.Infrastructure.Validators
             RuleFor(e => e.Title)
                 .NotEmpty().WithMessage("Название необходимо.")
                 .MaximumLength(50).WithMessage("Длина названия не должна превышать 50 символов.")
-                .MustAsync(async (title, cancellation) =>
-                    await _uniqueFieldChecker.IsUniqueAsync<Event>("Title", title))
+                .MustAsync(async (e, title, cancellation) =>
+                    await _uniqueFieldChecker.IsUniqueAsync<Event>("Title", title, e.Id))
                 .WithMessage("Событие с таким названием уже существует.");
 
             RuleFor(e => e.Description)

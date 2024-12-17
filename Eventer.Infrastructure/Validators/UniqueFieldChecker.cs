@@ -13,12 +13,17 @@ namespace Eventer.Infrastructure.Validators
             _context = context;
         }
 
-        public async Task<bool> IsUniqueAsync<TEntity>(string fieldName, string value)
+        public async Task<bool> IsUniqueAsync<TEntity>(string fieldName, string value, Guid? excludeId = null)
             where TEntity : class
         {
             var query = _context.Set<TEntity>().AsQueryable();
 
             query = query.Where(e => EF.Property<string>(e, fieldName) == value);
+
+            if (excludeId.HasValue)
+            {
+                query = query.Where(e => EF.Property<Guid>(e, "Id") != excludeId.Value);
+            }
 
             return !await query.AnyAsync();
         }

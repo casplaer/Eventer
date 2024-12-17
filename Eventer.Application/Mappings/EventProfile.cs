@@ -15,8 +15,8 @@ namespace Eventer.Application.Mappings
                 .ForMember(dest => dest.StartTime, opt => opt.Condition(src => src.StartTime.HasValue))
                 .ForMember(dest => dest.Venue, opt => opt.Condition(src => !string.IsNullOrEmpty(src.Venue)))
                 .ForMember(dest => dest.MaxParticipants, opt => opt.Condition(src => src.MaxParticipants.HasValue))
-                .ForMember(dest => dest.ImageURLs, opt => opt.Ignore()) // Обработка изображений остаётся вручную
-                .ForMember(dest => dest.Category, opt => opt.Ignore()); // Категория обрабатывается отдельно
+                .ForMember(dest => dest.ImageURLs, opt => opt.Ignore())
+                .ForMember(dest => dest.Category, opt => opt.Ignore());
         }
     }
 }

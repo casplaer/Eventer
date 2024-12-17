@@ -34,8 +34,8 @@ namespace Eventer.Infrastructure.Configurations
 
             builder.Property(e => e.ImageURLs)
                 .HasConversion(
-                    v => string.Join(';', v ?? new List<string>()),
-                    v => v.Split(';', StringSplitOptions.RemoveEmptyEntries).ToList()
+                    v => v == null || !v.Any() ? string.Empty : string.Join(';', v), 
+                    v => string.IsNullOrEmpty(v) ? new List<string>() : v.Split(';', StringSplitOptions.RemoveEmptyEntries).ToList()
                 );
 
             builder.HasOne(e => e.Category)

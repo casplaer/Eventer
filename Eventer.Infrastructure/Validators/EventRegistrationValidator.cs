@@ -24,8 +24,8 @@ namespace Eventer.Infrastructure.Validators
                 .NotEmpty().WithMessage("Поле Email обязательно.")
                 .MaximumLength(255).WithMessage("Поле Email не может превышать 255 символов.")
                 .EmailAddress().WithMessage("Некорректный формат Email.")
-                .MustAsync(async (email, cancellation) =>
-                    await _uniqueFieldChecker.IsUniqueAsync<EventRegistration>("Email", email))
+                .MustAsync(async (er, email, cancellation) =>
+                    await _uniqueFieldChecker.IsUniqueAsync<EventRegistration>("Email", email, er.Id))
                 .WithMessage("Пользователь с таким Email уже зарегистрирован."); ;
 
             RuleFor(er => er.DateOfBirth)

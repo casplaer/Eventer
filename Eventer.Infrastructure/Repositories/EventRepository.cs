@@ -18,11 +18,14 @@ namespace Eventer.Infrastructure.Repositories
             _context = context;
         }
 
-        public override Task<Event?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+        public async override Task<Event?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            return _context.Events.Include(e=>e.Category)
-                        .Include(e => e.Registrations)
-                        .FirstOrDefaultAsync(e=>e.Id == id);
+            var result = await _context.Events
+                .Include(e => e.Category)
+                .Include(e => e.Registrations)
+                .FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
+
+            return result;
         }
 
         public async Task<PaginatedResult<Event>> GetFilteredEventsAsync(GetEventsRequest request, CancellationToken cancellationToken)

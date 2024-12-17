@@ -22,7 +22,7 @@ namespace Eventer.Application.Services
                         await image.CopyToAsync(stream);
                     }
 
-                    imagePaths.Add($"{baseUrl}/uploads/{imageType}/{uniqueFileName}");
+                    imagePaths.Add($"{baseUrl}uploads/{imageType}/{uniqueFileName}");
                 }
             }
 
@@ -65,7 +65,7 @@ namespace Eventer.Application.Services
                         await image.CopyToAsync(stream);
                     }
 
-                    imagePaths.Add($"{baseUrl}/uploads/{imageType}/{uniqueFileName}");
+                    imagePaths.Add($"{baseUrl}uploads/{imageType}/{uniqueFileName}");
                 }
             }
 
@@ -76,7 +76,7 @@ namespace Eventer.Application.Services
                     if (!string.IsNullOrEmpty(existingImage))
                     {
                         var fileName = Path.GetFileName(existingImage);
-                        imagePaths.Add($"{baseUrl}/uploads/{imageType}/{fileName}");
+                        imagePaths.Add($"{baseUrl}uploads/{imageType}/{fileName}");
                     }
                 }
             }

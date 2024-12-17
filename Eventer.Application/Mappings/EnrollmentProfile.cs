@@ -11,6 +11,7 @@ namespace Eventer.Application.Mappings
             CreateMap<UpdateEnrollRequest, EventRegistration>()
                 .ForMember(dest => dest.Name, opt => opt.Condition(src => !string.IsNullOrEmpty(src.Name)))
                 .ForMember(dest => dest.Surname, opt => opt.Condition(src => !string.IsNullOrEmpty(src.Surname)))
+                .ForMember(dest => dest.Email, opt => opt.Condition(src => !string.IsNullOrEmpty (src.Email)))
                 .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth));
         }
     }

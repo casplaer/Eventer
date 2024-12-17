@@ -140,7 +140,7 @@ const CreateEventPage = () => {
             });
             setImages([]);
         } catch (err) {
-            const errorMessage = err.response?.data?.message || "Ошибка при получении категорий.";
+            const errorMessage = err.response?.data?.message || "Ошибка при создании события.";
             setError(errorMessage);
             console.error("Ошибка при создании события:", err.response?.data || err.message);
         }

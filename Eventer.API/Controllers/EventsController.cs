@@ -41,12 +41,6 @@ namespace Eventer.API.Controllers
             return Ok(new { Message = "Событие создано успешно." });
         }
 
-        [HttpGet("throw")]
-        public IActionResult ThrowException()
-        {
-            throw new InvalidOperationException("Произошла ошибка!");
-        }
-
         [HttpGet]
         public async Task<IActionResult> GetEvents([FromQuery] GetEventsRequest request, CancellationToken cancellationToken)
         {

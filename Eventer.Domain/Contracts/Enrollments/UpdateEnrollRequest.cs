@@ -4,6 +4,7 @@
         Guid EnrollmentId,
         string Name,
         string Surname,
+        string Email,
         DateOnly DateOfBirth
         );
 }
