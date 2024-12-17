@@ -35,7 +35,7 @@ namespace Eventer.Tests.RepositoryMethods
 
             var repository = new EventRepository(context);
 
-            var result = await repository.GetByIdAsync(testEvent.Id);
+            var result = await repository.GetByIdAsync(testEvent.Id, new CancellationToken());
 
             Assert.NotNull(result);
             Assert.Equal(testEvent.Id, result.Id);
@@ -54,7 +54,7 @@ namespace Eventer.Tests.RepositoryMethods
             using var context = new EventerDbContext(options);
             var repository = new EventRepository(context);
 
-            var result = await repository.GetByIdAsync(Guid.NewGuid());
+            var result = await repository.GetByIdAsync(Guid.NewGuid(), new CancellationToken());
 
             Assert.Null(result);
         }
@@ -91,7 +91,7 @@ namespace Eventer.Tests.RepositoryMethods
 
             var repository = new EventRepository(context);
 
-            var result = await repository.GetByIdAsync(testEvent.Id);
+            var result = await repository.GetByIdAsync(testEvent.Id, new CancellationToken());
 
             Assert.NotNull(result);
             Assert.NotNull(result.Category);

@@ -1,6 +1,5 @@
 ﻿using Eventer.Application.Contracts.Enrollments;
-using Eventer.Application.Interfaces.Services;
-using Eventer.Application.Services;
+using Eventer.Application.Interfaces.UseCases.Enrollment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -12,95 +11,71 @@ namespace Eventer.API.Controllers
     [Route("api/[controller]")]
     public class EnrollmentsController : Controller
     {
-        private readonly IEnrollmentService _enrollmentService;
+        private readonly IEnrollOnEventUseCase _enrollOnEventUseCase;
+        private readonly ICheckUserEnrollmentUseCase _checkUserEnrollmentUseCase;
+        private readonly IUpdateEnrollmentUseCase _updateEnrollmentUseCase;
+        private readonly IGetSingleEnrollmentByIdUseCase _getSingleEnrollmentUseCase;
+        private readonly IDeleteEnrollmentUseCase _deleteEnrollmentUseCase;
+        private readonly IGetAllEnrollmentsUseCase _getAllEnrollmentsUseCase;
 
-        public EnrollmentsController(IEnrollmentService enrollmentService)
+        public EnrollmentsController(
+            IEnrollOnEventUseCase enrollOnEventUseCase,
+            ICheckUserEnrollmentUseCase checkUserEnrollmentUseCase,
+            IUpdateEnrollmentUseCase updateEnrollmentUseCase,
+            IGetSingleEnrollmentByIdUseCase getSingleEnrollmentUseCase,
+            IDeleteEnrollmentUseCase deleteEnrollmentUseCase,
+            IGetAllEnrollmentsUseCase getAllEnrollmentsUseCase)
         {
-            _enrollmentService = enrollmentService;
+            _enrollOnEventUseCase = enrollOnEventUseCase;
+            _checkUserEnrollmentUseCase = checkUserEnrollmentUseCase;
+            _updateEnrollmentUseCase = updateEnrollmentUseCase;
+            _getSingleEnrollmentUseCase = getSingleEnrollmentUseCase;
+            _deleteEnrollmentUseCase = deleteEnrollmentUseCase;
+            _getAllEnrollmentsUseCase = getAllEnrollmentsUseCase;
         }
 
         [HttpPost]
-        [Authorize]
-        public async Task<IActionResult> EnrollOnEvent([FromBody] EnrollRequest request)
+        public async Task<IActionResult> EnrollOnEvent([FromBody] EnrollRequest request, CancellationToken cancellationToken)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            await _enrollmentService.EnrollOnEventAsync(request, new Guid(userId!));
-            return Ok();
+            await _enrollOnEventUseCase.ExecuteAsync(request, Guid.Parse(userId!), cancellationToken);
+            return Ok(new { Message = "Enrollment successful." });
         }
 
         [HttpGet("{eventId}/isEnrolled")]
-        [Authorize]
-        public async Task<IActionResult> IsUserEnrolled(Guid eventId)
+        public async Task<IActionResult> IsUserEnrolled(Guid eventId, CancellationToken cancellationToken)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            try
-            {
-                var enrollmentId = await _enrollmentService.IsUserEnrolledAsync(eventId, Guid.Parse(userId));
-                return Ok(new
-                {
-                    IsEnrolled = true,
-                    Id = enrollmentId
-                });
-            }
-            catch (Exception ex)
-            {
-                return Ok(new { IsEnrolled = false });
-            }
+            var enrollmentResponse = await _checkUserEnrollmentUseCase.ExecuteAsync(eventId, Guid.Parse(userId), cancellationToken);
+            return Ok(enrollmentResponse);
         }
 
         [HttpPut]
-        [Authorize]
-        public async Task<IActionResult> UpdateEnrollment([FromBody] UpdateEnrollRequest request)
+        public async Task<IActionResult> UpdateEnrollment([FromBody] UpdateEnrollRequest request, CancellationToken cancellationToken)
         {
-            try
-            {
-                await _enrollmentService.UpdateEnrollmentAsync(request);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { Message = "Что-то пошло не так..." });
-            }
+            await _updateEnrollmentUseCase.ExecuteAsync(request, cancellationToken);
+            return Ok(new { Message = "Enrollment updated successfully." });
         }
 
         [HttpGet("{id}")]
-        [Authorize]
-        public async Task<IActionResult> GetSingleEnrollment(Guid id)
+        public async Task<IActionResult> GetSingleEnrollment(Guid id, CancellationToken cancellationToken)
         {
-            var enrollment = await _enrollmentService.GetSingleEnrollmentById(id);
-
+            var enrollment = await _getSingleEnrollmentUseCase.ExecuteAsync(id, cancellationToken);
             return Ok(enrollment);
         }
 
         [HttpDelete("{id}")]
-        [Authorize]
-        public async Task<IActionResult> DeleteEnrollment(Guid id)
+        public async Task<IActionResult> DeleteEnrollment(Guid id, CancellationToken cancellationToken)
         {
-            var result = await _enrollmentService.DeleteEnrollmentAsync(id);
-
-            if (!result)
-            {
-                return BadRequest(new { Message = "Не удалось удалить запись." });
-            }
-
+            await _deleteEnrollmentUseCase.ExecuteAsync(id, cancellationToken);
             return NoContent();
         }
 
         [HttpGet("users-enrolled/{id}")]
-        [Authorize]
-        public async Task<IActionResult> GetAllUsersEnrolled(Guid id)
+        public async Task<IActionResult> GetAllUsersEnrolled(Guid id, CancellationToken cancellationToken)
         {
-            try
-            {
-                var users = await _enrollmentService.GetAllEnrollmentsAsync(id);
-                return Ok(users);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { Message = ex.Message });
-            }
-
+            var users = await _getAllEnrollmentsUseCase.ExecuteAsync(id, cancellationToken);
+            return Ok(users);
         }
     }
 }

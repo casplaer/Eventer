@@ -4,19 +4,21 @@
     {
         public Guid Id { get; set; }
 
-        public string Title { get; set; } = string.Empty; //Название
-        public string Description { get; set; } = string.Empty; //Описание
+        public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
         
-        public DateOnly StartDate { get; set; } //Дата проведения
-        public TimeOnly StartTime { get; set; } //Время проведения
+        public DateOnly StartDate { get; set; }
+        public TimeOnly StartTime { get; set; } 
         
-        public string Venue {  get; set; } = string.Empty; //Место проведения
+        public string Venue {  get; set; } = string.Empty; 
         
-        public EventCategory Category { get; set; } //Категория
+        public Guid CategoryId { get; set; }
 
-        public int MaxParticipants { get; set; } //Максимальное количество участников
-        public List<EventRegistration> Registrations { get; set; } = []; //Список участников
+        public EventCategory Category { get; set; } 
 
-        public List<string>? ImageURLs { get; set; } //Пути к изображениям
+        public int MaxParticipants { get; set; } 
+        public List<EventRegistration> Registrations { get; set; } = []; 
+
+        public List<string>? ImageURLs { get; set; } 
     }
 }

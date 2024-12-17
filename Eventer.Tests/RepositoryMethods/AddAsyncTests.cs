@@ -2,11 +2,6 @@
 using Eventer.Infrastructure.Data;
 using Eventer.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Eventer.Tests.RepositoryMethods
 {
@@ -34,7 +29,7 @@ namespace Eventer.Tests.RepositoryMethods
 
             var repository = new EventRepository(context);
 
-            await repository.AddAsync(testEvent);
+            await repository.AddAsync(testEvent, new CancellationToken());
             await context.SaveChangesAsync();
 
             var addedEvent = await context.Events.FirstOrDefaultAsync(e => e.Id == testEvent.Id);
@@ -68,7 +63,7 @@ namespace Eventer.Tests.RepositoryMethods
             var repository = new EventRepository(context);
 
             await context.Categories.AddAsync(category);
-            await repository.AddAsync(testEvent);
+            await repository.AddAsync(testEvent, new CancellationToken());
             await context.SaveChangesAsync();
 
             var addedEvent = await context.Events.Include(e => e.Category).FirstOrDefaultAsync(e => e.Id == testEvent.Id);

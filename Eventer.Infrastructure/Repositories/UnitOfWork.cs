@@ -1,4 +1,4 @@
-﻿using Eventer.Application.Interfaces.Repositories;
+﻿using Eventer.Domain.Interfaces.Repositories;
 using Eventer.Domain.Models;
 using Eventer.Infrastructure.Data;
 

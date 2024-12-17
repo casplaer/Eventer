@@ -153,7 +153,8 @@ const EditEventPage = () => {
             navigate("/admin");
         } catch (err) {
             console.error("Ошибка при обновлении события:", err);
-            setError("Не удалось обновить событие. Попробуйте снова.");
+            const errorMessage = err.response?.data?.message || "Не удалось обновить событие. Попробуйте снова.";
+            setError(errorMessage);
         }
     };
 

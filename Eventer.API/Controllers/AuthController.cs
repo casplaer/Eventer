@@ -1,5 +1,5 @@
 ﻿using Eventer.Application.Contracts.Auth;
-using Eventer.Application.Interfaces.Services;
+using Eventer.Application.Interfaces.UseCases.Auth;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Eventer.API.Controllers
@@ -8,82 +8,39 @@ namespace Eventer.API.Controllers
     [Route("api/[controller]")]
     public class AuthController : Controller
     {
-        private readonly IAuthService _authService;
-        public AuthController(IAuthService authService)
+        private readonly IRegisterUserUseCase _registerUserUseCase;
+        private readonly ILoginUserUseCase _loginUserUseCase;
+        private readonly IRefreshTokenUseCase _refreshTokenUseCase;
+
+        public AuthController(
+            IRegisterUserUseCase registerUserUseCase,
+            ILoginUserUseCase loginUserUseCase,
+            IRefreshTokenUseCase refreshTokenUseCase)
         {
-            _authService = authService;
+            _registerUserUseCase = registerUserUseCase;
+            _loginUserUseCase = loginUserUseCase;
+            _refreshTokenUseCase = refreshTokenUseCase;
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody]RegisterUserRequest request)
+        public async Task<IActionResult> Register([FromBody] RegisterUserRequest request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var existingUser = await _authService.GetUserByUsernameAsync(request.UserName);
-                if (existingUser != null)
-                {
-                    return BadRequest(new { Message = "Пользователь с таким логином уже существует." });
-                }
-            }
-            catch(Exception ex)
-            {
-
-            }
-
-            try
-            {
-                await _authService.RegisterUserAsync(request);
-                return Ok(new { Message = "Пользователь успешно зарегистрирован." });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { Message = "Ошибка регистрации. Попробуйте снова." });
-            }
+            await _registerUserUseCase.Execute(request, cancellationToken);
+            return Ok(new { Message = "Пользователь успешно зарегистрирован." });
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody]LoginUserRequest request)
+        public async Task<IActionResult> Login([FromBody] LoginUserRequest request, CancellationToken cancellationToken)
         {
-            TokensResponse tmpTokens;
-            try
-            {
-                tmpTokens = await _authService.LoginUserAsync(request);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(400, new {Message = "Такого пользователя не существует."});
-            }
-
-            var tokens = tmpTokens;
-
-            var user = await _authService.GetUserByUsernameAsync(request.UserName);
-
-            var userDTO = new UserDTO(user.UserName, 
-                                user.Email,  
-                                user.EventRegistrations
-                                );
-
-            return Ok(new
-            {
-                AccessToken = tokens.AccessToken,
-                RefreshToken = tokens.RefreshToken,
-                User = userDTO
-            });
+            var result = await _loginUserUseCase.Execute(request, cancellationToken);
+            return Ok(result);
         }
 
         [HttpPost("refresh")]
-        public async Task<IActionResult> Refresh([FromBody]RefreshTokenRequest request)
+        public async Task<IActionResult> Refresh([FromBody]RefreshTokenRequest request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var tokens = await _authService.RefreshTokensAsync(request.RefreshToken);
-
-                return Ok(tokens.AccessToken);
-            }
-            catch(Exception ex)
-            {
-                return Unauthorized(new { ex.Message });
-            }
+            var token = await _refreshTokenUseCase.Execute(request.RefreshToken, cancellationToken);
+            return Ok(token);
         }
     }
 }

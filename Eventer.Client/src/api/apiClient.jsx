@@ -27,7 +27,6 @@ apiClient.interceptors.response.use(
             error.config._retry = true;
 
             try {
-                // Запрос на эндпоинт /refresh
                 const refreshToken = sessionStorage.getItem("refreshToken");
 
                 const refreshResponse = await axios.post(
@@ -48,14 +47,13 @@ apiClient.interceptors.response.use(
             } catch (refreshError) {
                 console.error("Ошибка обновления токена:", refreshError.response?.data || refreshError.message);
 
-                // Перенаправление на логин
                 sessionStorage.clear();
                 window.location.href = "/login";
                 return Promise.reject(refreshError);
             }
         }
 
-        return Promise.reject(error); // Если ошибка не 401
+        return Promise.reject(error); 
     }
 );
 

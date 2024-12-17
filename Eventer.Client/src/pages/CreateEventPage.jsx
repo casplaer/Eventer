@@ -46,7 +46,7 @@ const CreateEventPage = () => {
                     }));
                 }
             } catch (err) {
-                const errorMessage = err.response?.data?.message || "Ошибка при создании события.";
+                const errorMessage = err.response?.data?.message || "Ошибка при получении категорий.";
                 setError(errorMessage);
             }
         };
@@ -140,11 +140,8 @@ const CreateEventPage = () => {
             });
             setImages([]);
         } catch (err) {
-            const errorResponse = err.response?.data;
-            const firstError = errorResponse?.errors
-                ? Object.values(errorResponse.errors)[0][0]
-                : "Ошибка при создании события.";
-            setError(firstError);
+            const errorMessage = err.response?.data?.message || "Ошибка при получении категорий.";
+            setError(errorMessage);
             console.error("Ошибка при создании события:", err.response?.data || err.message);
         }
     };

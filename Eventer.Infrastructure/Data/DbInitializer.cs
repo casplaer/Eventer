@@ -1,10 +1,33 @@
 ﻿using Eventer.Application.Interfaces.Auth;
+using Eventer.Domain.Enums;
 using Eventer.Domain.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Eventer.Infrastructure.Data
 {
     public static class DbInitializer
     {
+        public static void SeedDatabase(IServiceProvider services)
+        {
+            using var scope = services.CreateScope();
+            var scopedServices = scope.ServiceProvider;
+
+            try
+            {
+                var context = scopedServices.GetRequiredService<EventerDbContext>();
+                var hasher = scopedServices.GetRequiredService<IPasswordHasher>();
+                context.Database.Migrate();
+                Initialize(context, hasher);
+            }
+            catch (Exception ex)
+            {
+                var logger = scopedServices.GetRequiredService<ILogger<EventerDbContext>>();
+                logger.LogError(ex, "An error occurred while migrating or seeding the database.");
+            }
+        }
+
         public static void Initialize(EventerDbContext context, IPasswordHasher hasher)
         {
             context.Database.EnsureCreated();
@@ -15,10 +38,11 @@ namespace Eventer.Infrastructure.Data
                 (
                     id: Guid.NewGuid(),
                     userName: "TestAdmin",
-                    email: "admin@mail.com",
+                    email: "Admin@mail.com",
                     passwordHash: hasher.GenerateHash("123qwe")
                 );
                 adminUser.Role = UserRole.Admin;
+                adminUser.NormalizedEmail = "admin@mail.com";
                 context.Users.AddAsync(adminUser);
             }
 

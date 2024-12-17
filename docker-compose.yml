@@ -1,12 +1,14 @@
 ﻿services:
   postgres:
-    container_name: postgres
-    image: postgres
+    image: postgres:latest
+    container_name: postgres_container    
     restart: always
     environment:
-        POSTGRES_DB: eventer
         POSTGRES_USER: postgres
         POSTGRES_PASSWORD: postgres
+        POSTGRES_DB: eventer
+        PGDATA: /var/lib/postgresql/data/pgdata
+  
     ports:
         - 5443:5432
     volumes:

@@ -1,4 +1,4 @@
-﻿using Eventer.Application.Interfaces.Repositories;
+﻿using Eventer.Domain.Interfaces.Repositories;
 using Eventer.Domain.Models;
 using Eventer.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -11,25 +11,21 @@ namespace Eventer.Infrastructure.Repositories
         {
         }
 
-        public async Task<User> GetByEmailAsync(string email)
+        public async Task<User?> GetByNormalizedEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-            if(user == null)
-            {
-                throw new Exception("No such user.");
-            }
-            
-            return user;
+            return await _context.Users
+                .FirstOrDefaultAsync(u => u.NormalizedEmail == normalizedEmail, cancellationToken);
         }
 
-        public override Task<User?> GetByIdAsync(Guid id)
+
+        public override Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            return _context.Users.Include(u=>u.EventRegistrations).FirstOrDefaultAsync(u=>u.Id == id);
+            return _context.Users.Include(u=>u.EventRegistrations).FirstOrDefaultAsync(u=>u.Id == id, cancellationToken);
         }
 
-        public async Task<User> GetByUserNameAsync(string userName)
+        public async Task<User> GetByUserNameAsync(string userName, CancellationToken cancellationToken)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName, cancellationToken);
             if( user == null)
             {
                 return null;
@@ -38,9 +34,9 @@ namespace Eventer.Infrastructure.Repositories
             return user;
         }
 
-        public async Task<User> GetByRefreshTokenAsync(string token)
+        public async Task<User> GetByRefreshTokenAsync(string token, CancellationToken cancellationToken)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == token);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == token, cancellationToken);
             if(user == null)
             {
                 return null;

@@ -1,6 +1,6 @@
 ﻿using Eventer.Application.Contracts.Categories;
 using Eventer.Application.Contracts.Events;
-using Eventer.Application.Interfaces.Services;
+using Eventer.Application.Interfaces.UseCases.Category;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Eventer.API.Controllers
@@ -9,53 +9,48 @@ namespace Eventer.API.Controllers
     [Route("api/[controller]")]
     public class CategoriesController : Controller
     {
-        public readonly ICategoryService _categoriesService;
+        private readonly IGetCategoriesByNameUseCase _getCategoriesByNameUseCase;
+        private readonly IAddCategoryUseCase _addCategoryUseCase;
+        private readonly IUpdateCategoryUseCase _updateCategoryUseCase;
+        private readonly IDeleteCategoryUseCase _deleteCategoryUseCase;
 
-        public CategoriesController(ICategoryService categoriesService)
+        public CategoriesController(
+            IGetCategoriesByNameUseCase getCategoriesByNameUseCase,
+            IAddCategoryUseCase addCategoryUseCase,
+            IUpdateCategoryUseCase updateCategoryUseCase,
+            IDeleteCategoryUseCase deleteCategoryUseCase)
         {
-            _categoriesService = categoriesService;
+            _getCategoriesByNameUseCase = getCategoriesByNameUseCase;
+            _addCategoryUseCase = addCategoryUseCase;
+            _updateCategoryUseCase = updateCategoryUseCase;
+            _deleteCategoryUseCase = deleteCategoryUseCase;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCategories([FromQuery]string? name)
+        public async Task<IActionResult> GetCategories([FromQuery] string? name, CancellationToken cancellationToken)
         {
-            var categories = await _categoriesService.GetCategoriesByNameAsync(name);
-
+            var categories = await _getCategoriesByNameUseCase.ExecuteAsync(name, cancellationToken);
             return Ok(new GetCategoriesResponse(categories));
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCategory([FromBody]CreateCategoryRequest request)
+        public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryRequest request, CancellationToken cancellationToken)
         {
-            try
-            {
-                await _categoriesService.AddCategoryAsync(request);
-                return Ok("Category successfully created.");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"An error occurred while creating the category. Message: {ex}");
-            }
+            await _addCategoryUseCase.ExecuteAsync(request, cancellationToken);
+            return Ok("Category successfully created.");
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateEvent([FromBody] UpdateCategoryRequest request)
+        public async Task<IActionResult> UpdateCategory([FromBody] UpdateCategoryRequest request, CancellationToken cancellationToken)
         {
-            await _categoriesService.UpdateCategoryAsync(request);
-
+            await _updateCategoryUseCase.ExecuteAsync(request, cancellationToken);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEvent(Guid id)
+        public async Task<IActionResult> DeleteCategory(Guid id, CancellationToken cancellationToken)
         {
-            var isDeleted = await _categoriesService.DeleteCategoryAsync(id);
-
-            if (!isDeleted)
-            {
-                return NotFound($"Category with ID {id} not found.");
-            }
-
+            await _deleteCategoryUseCase.ExecuteAsync(id, cancellationToken);
             return NoContent();
         }
     }

@@ -1,9 +1,7 @@
-﻿using Eventer.Application.Contracts.Enrollments;
-using Eventer.Application.Contracts.Events;
-using Eventer.Application.Interfaces.Services;
+﻿using Eventer.Application.Interfaces.UseCases.Events;
+using Eventer.Domain.Contracts.Events;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace Eventer.API.Controllers
 {
@@ -11,21 +9,36 @@ namespace Eventer.API.Controllers
     [Route("api/[controller]")]
     public class EventsController : Controller
     {
-        private readonly IEventService _eventService;
+        private readonly IAddEventUseCase _addEventUseCase;
+        private readonly IGetFilteredEventsUseCase _getFilteredEventsUseCase;
+        private readonly IGetUsersEventsUseCase _getUsersEventsUseCase;
+        private readonly IGetEventByIdUseCase _getEventByIdUseCase;
+        private readonly IUpdateEventUseCase _updateEventUseCase;
+        private readonly IDeleteEventUseCase _deleteEventUseCase;
 
-        public EventsController(IEventService eventService)
+        public EventsController(
+            IAddEventUseCase addEventUseCase,
+            IGetFilteredEventsUseCase getFilteredEventsUseCase,
+            IGetUsersEventsUseCase getUsersEventsUseCase,
+            IGetEventByIdUseCase getEventByIdUseCase,
+            IUpdateEventUseCase updateEventUseCase,
+            IDeleteEventUseCase deleteEventUseCase)
         {
-            _eventService = eventService;
+            _addEventUseCase = addEventUseCase;
+            _getFilteredEventsUseCase = getFilteredEventsUseCase;
+            _getUsersEventsUseCase = getUsersEventsUseCase;
+            _getEventByIdUseCase = getEventByIdUseCase;
+            _updateEventUseCase = updateEventUseCase;
+            _deleteEventUseCase = deleteEventUseCase;
         }
 
         [HttpPost]
         [Authorize(Policy = "AdminPolicy")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> CreateEvent([FromForm]CreateEventRequest request)
+        public async Task<IActionResult> CreateEvent([FromForm] CreateEventRequest request, CancellationToken cancellationToken)
         {
-            await _eventService.AddEventAsync(request);
-
-            return Ok();
+            await _addEventUseCase.ExecuteAsync(request, cancellationToken);
+            return Ok(new { Message = "Событие создано успешно." });
         }
 
         [HttpGet("throw")]
@@ -34,90 +47,69 @@ namespace Eventer.API.Controllers
             throw new InvalidOperationException("Произошла ошибка!");
         }
 
-
         [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> GetEvents([FromQuery]GetEventsRequest request)
+        public async Task<IActionResult> GetEvents([FromQuery] GetEventsRequest request, CancellationToken cancellationToken)
         {
-            var data = await _eventService.GetFilteredEventsAsync(request);
+            var data = await _getFilteredEventsUseCase.ExecuteAsync(request, cancellationToken);
 
-            if(data == null)
-            {
-                return Ok(new GetEventsResponse(new List<EventDTO>(), 1));
-            }
+            var eventDtos = data.Items.Select(e => new EventDTO(
+                e.Id,
+                e.Title,
+                e.Description,
+                e.StartDate,
+                e.StartTime,
+                e.Venue,
+                e.Category,
+                e.MaxParticipants,
+                e.ImageURLs,
+                e.Registrations.Count)).ToList();
 
-            var eventDtos = data.Items
-                                .Select(e => new EventDTO(e.Id, e.Title,
-                                                          e.Description, e.StartDate,
-                                                          e.StartTime, e.Venue,
-                                                          e.Category,
-                                                          e.MaxParticipants,
-                                                          e.ImageURLs,
-                                                          e.Registrations.Count))
-                                .ToList();
-
-            var totalPages = data.TotalPages;
-
-            return Ok(new GetEventsResponse(eventDtos, totalPages));
+            return Ok(new GetEventsResponse(eventDtos, data.TotalPages));
         }
 
         [HttpGet("your-events")]
-        [Authorize]
-        public async Task<IActionResult> GetUsersEvents([FromQuery] UsersEventsRequest request)
+        public async Task<IActionResult> GetUsersEvents([FromQuery] UsersEventsRequest request, CancellationToken cancellationToken)
         {
-            var data = await _eventService.GetUsersEventsAsync(request);
+            var data = await _getUsersEventsUseCase.ExecuteAsync(request, cancellationToken);
 
-            var eventDtos = data.Items
-                                .Select(e => new EventDTO(e.Id, e.Title,
-                                                          e.Description, e.StartDate,
-                                                          e.StartTime, e.Venue,
-                                                          e.Category,
-                                                          e.MaxParticipants,
-                                                          e.ImageURLs,
-                                                          e.Registrations.Count))
-                                .ToList();
+            var eventDtos = data.Items.Select(e => new EventDTO(
+                e.Id,
+                e.Title,
+                e.Description,
+                e.StartDate,
+                e.StartTime,
+                e.Venue,
+                e.Category,
+                e.MaxParticipants,
+                e.ImageURLs,
+                e.Registrations.Count)).ToList();
 
-            var totalPages = data.TotalPages;
-
-            return Ok(new GetEventsResponse(eventDtos, totalPages));
+            return Ok(new GetEventsResponse(eventDtos, data.TotalPages));
         }
 
 
         [HttpGet("{id}")]
         [Authorize]
-        public async Task<IActionResult> GetEvent(Guid id)
+        public async Task<IActionResult> GetEvent(Guid id, CancellationToken cancellationToken)
         {
-            var eventToReturn = await _eventService.GetEventByIdAsync(id);
-
-            if(eventToReturn == null)
-            {
-                return NotFound(new { Message = "Событие не найдено." });
-            }
-
+            var eventToReturn = await _getEventByIdUseCase.ExecuteAsync(id, cancellationToken);
             return Ok(eventToReturn);
         }
 
         [HttpPut]
         [Authorize(Policy = "AdminPolicy")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> UpdateEvent([FromForm]UpdateEventRequest request)
+        public async Task<IActionResult> UpdateEvent([FromForm] UpdateEventRequest request, CancellationToken cancellationToken)
         {
-            await _eventService.UpdateEventAsync(request);
-
+            await _updateEventUseCase.ExecuteAsync(request, cancellationToken);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         [Authorize(Policy = "AdminPolicy")]
-        public async Task<IActionResult> DeleteEvent(Guid id)
+        public async Task<IActionResult> DeleteEvent(Guid id, CancellationToken cancellationToken)
         {
-            var isDeleted = await _eventService.DeleteEventAsync(id);
-
-            if (!isDeleted)
-            {
-                return NotFound($"Event with ID {id} not found.");
-            }
-
+            await _deleteEventUseCase.ExecuteAsync(id, cancellationToken);
             return NoContent();
         }
     }
