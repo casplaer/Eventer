@@ -35,8 +35,6 @@ namespace Eventer.Infrastructure.Validators
             RuleFor(e => e.MaxParticipants)
                 .NotNull().WithMessage("Максимальное количество участников это обязательное поле.");
 
-            RuleFor(e => e.CategoryId)
-                .NotEmpty().WithMessage("Категория это обязательное поле.");
         }
     }
 }

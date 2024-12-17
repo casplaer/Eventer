@@ -129,20 +129,6 @@ namespace Eventer.Infrastructure.Data
 
                 context.SaveChanges();
             }
-
-            if (!context.Users.Any())
-            {
-                var testUser = User.Create(Guid.NewGuid(), "TestUser", hasher.GenerateHash("123qwe"), "test@mail.com");
-
-                var testAdmin = User.Create(Guid.NewGuid(), "TestAdmin", hasher.GenerateHash("123qwe"), "test_admin@mail.com");
-                testAdmin.Role = UserRole.Admin;
-
-                context.Users.AddAsync(testUser);
-                context.Users.AddAsync(testAdmin);
-
-                context.SaveChanges();
-            }
-
         }
     }
 }

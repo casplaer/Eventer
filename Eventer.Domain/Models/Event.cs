@@ -12,10 +12,8 @@
         
         public string Venue {  get; set; } = string.Empty; 
         
-        public Guid CategoryId { get; set; }
-
         public EventCategory Category { get; set; } 
-
+        
         public int MaxParticipants { get; set; } 
         public List<EventRegistration> Registrations { get; set; } = []; 
 

@@ -40,7 +40,6 @@ namespace Eventer.Infrastructure.Configurations
 
             builder.HasOne(e => e.Category)
                 .WithMany()
-                .HasForeignKey(e => e.CategoryId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(e => e.Registrations)
