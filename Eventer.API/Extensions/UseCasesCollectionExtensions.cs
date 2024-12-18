@@ -5,7 +5,6 @@ using Eventer.Application.Interfaces.UseCases.Category;
 using Eventer.Application.Interfaces.UseCases.Enrollment;
 using Eventer.Application.Interfaces.UseCases.Events;
 using Eventer.Application.Mappings;
-using Eventer.Application.Services;
 using Eventer.Application.UseCases.Auth;
 using Eventer.Application.UseCases.Category;
 using Eventer.Application.UseCases.Enrollment;
@@ -13,6 +12,7 @@ using Eventer.Application.UseCases.Events;
 using Eventer.Infrastructure.Data;
 using Eventer.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Eventer.Infrastructure.Services;
 
 namespace Eventer.API.Extensions
 {
@@ -23,10 +23,6 @@ namespace Eventer.API.Extensions
             var connectionString = configuration.GetConnectionString("DefaultConnection");
 
             services.AddScoped<IImageService, ImageService>();
-
-            services.AddAutoMapper(typeof(EventProfile).Assembly);
-            services.AddAutoMapper(typeof(EnrollmentProfile).Assembly);
-            services.AddAutoMapper(typeof(CategoryProfile).Assembly);
 
             services.AddScoped<IPasswordHasher, PasswordHasher>();
 

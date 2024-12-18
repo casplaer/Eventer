@@ -15,21 +15,15 @@ builder.Services.AddCustomCors();
 builder.Services.AddDbContext<EventerDbContext>(options =>
     options.UseNpgsql(connectionString));
 
+builder.Services.AddValidators();
 builder.Services.AddApplicationRepositories();
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddApplicationUseCases(builder.Configuration);
 builder.Services.AddGeneralServices();
-builder.Services.AddValidators();
 
 var app = builder.Build();
 
 DbInitializer.SeedDatabase(app.Services);
-
-if (app.Environment.IsDevelopment())
-{
-    //app.UseSwagger();
-    //app.UseSwaggerUI();
-}
 
 app.UseStaticFiles();
 app.UseHttpsRedirection();

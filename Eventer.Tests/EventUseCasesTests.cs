@@ -15,6 +15,17 @@ using NSubstitute;
 
 public class EventUseCasesTests
 {
+    private UnitOfWork CreateUnitOfWork(EventerDbContext context)
+    {
+        return new UnitOfWork(
+            context,
+            new EventRepository(context),
+            new CategoryRepository(context),
+            new UserRepository(context),
+            new Repository<EventRegistration>(context)
+        );
+    }
+
     private EventerDbContext CreateInMemoryContext()
     {
         var options = new DbContextOptionsBuilder<EventerDbContext>()
@@ -27,7 +38,9 @@ public class EventUseCasesTests
     public async Task GetFilteredEventsUseCase_ShouldReturnFilteredEventsByTitle()
     {
         var context = CreateInMemoryContext();
-        var unitOfWork = new UnitOfWork(context);
+
+        var unitOfWork = CreateUnitOfWork(context);
+
         var useCase = new GetFilteredEventsUseCase(unitOfWork);
 
         var category = TestDataGenerator.GenerateCategory(name: "Test Category");
@@ -55,7 +68,8 @@ public class EventUseCasesTests
     public async Task GetFilteredEventsUseCase_ShouldReturnFilteredEventsByDate()
     {
         var context = CreateInMemoryContext();
-        var unitOfWork = new UnitOfWork(context);
+        var unitOfWork = CreateUnitOfWork(context);
+
         var useCase = new GetFilteredEventsUseCase(unitOfWork);
 
         var category = TestDataGenerator.GenerateCategory(name: "Test Category");
@@ -86,7 +100,8 @@ public class EventUseCasesTests
     public async Task GetFilteredEventsUseCase_ShouldReturnEmpty_WhenNoMatches()
     {
         var context = CreateInMemoryContext();
-        var unitOfWork = new UnitOfWork(context);
+        var unitOfWork = CreateUnitOfWork(context);
+
         var useCase = new GetFilteredEventsUseCase(unitOfWork);
 
         var category = TestDataGenerator.GenerateCategory(name: "Test Category");
@@ -115,7 +130,9 @@ public class EventUseCasesTests
     public async Task GetFilteredEventsUseCase_ShouldPaginateResults()
     {
         var context = CreateInMemoryContext();
-        var unitOfWork = new UnitOfWork(context);
+
+        var unitOfWork = CreateUnitOfWork(context);
+
         var useCase = new GetFilteredEventsUseCase(unitOfWork);
 
         var category = TestDataGenerator.GenerateCategory(name: "Test Category");
@@ -143,16 +160,18 @@ public class EventUseCasesTests
     public async Task AddEventUseCase_ShouldAddEvent()
     {
         var context = CreateInMemoryContext();
-        var unitOfWork = new UnitOfWork(context);
+
+        var unitOfWork = CreateUnitOfWork(context);
 
         var imageService = Substitute.For<IImageService>();
         var validator = Substitute.For<IValidator<Event>>();
         var httpClient = new HttpClient();
+        var mapper = Substitute.For<IMapper>();
 
         validator.ValidateAsync(Arg.Any<Event>(), Arg.Any<CancellationToken>())
              .Returns(new ValidationResult());
 
-        var useCase = new AddEventUseCase(unitOfWork, httpClient, imageService, validator);
+        var useCase = new AddEventUseCase(unitOfWork, httpClient, imageService, validator, mapper);
 
         var category = TestDataGenerator.GenerateCategory(name: "Test Category");
 
@@ -182,7 +201,8 @@ public class EventUseCasesTests
     public async Task AddEventUseCase_ShouldThrowIfCategoryNotFound()
     {
         var context = CreateInMemoryContext();
-        var unitOfWork = new UnitOfWork(context);
+
+        var unitOfWork = CreateUnitOfWork(context);
 
         var imageService = Substitute.For<IImageService>();
         var validator = Substitute.For<IValidator<Event>>();
@@ -191,7 +211,9 @@ public class EventUseCasesTests
         validator.ValidateAsync(Arg.Any<Event>(), Arg.Any<CancellationToken>())
              .Returns(new ValidationResult());
 
-        var useCase = new AddEventUseCase(unitOfWork, httpClient, imageService, validator);
+        var mapper = Substitute.For<IMapper>();
+
+        var useCase = new AddEventUseCase(unitOfWork, httpClient, imageService, validator, mapper);
 
         var invalidCategory = TestDataGenerator.GenerateCategory(name: "Invalid Category");
 
@@ -214,10 +236,12 @@ public class EventUseCasesTests
     public async Task UpdateEventUseCase_ShouldUpdateEvent()
     {
         var context = CreateInMemoryContext();
-        var unitOfWork = new UnitOfWork(context);
+
+        var unitOfWork = CreateUnitOfWork(context);
+
         var httpClient = new HttpClient();
         var imageService = Substitute.For<IImageService>();
-        var mapper = new Mapper(new MapperConfiguration(cfg => cfg.AddProfile<EventProfile>()));
+        var mapper = new Mapper(new MapperConfiguration(cfg => cfg.AddProfile<UpdateEventProfile>()));
         var validator = Substitute.For<IValidator<Event>>();
 
         validator.ValidateAsync(Arg.Any<Event>(), Arg.Any<CancellationToken>())
@@ -265,10 +289,12 @@ public class EventUseCasesTests
     public async Task UpdateEventUseCase_ShouldThrowIfEventNotFound()
     {
         var context = CreateInMemoryContext();
-        var unitOfWork = new UnitOfWork(context);
+
+        var unitOfWork = CreateUnitOfWork(context);
+
         var httpClient = new HttpClient();
         var imageService = Substitute.For<IImageService>();
-        var mapper = new Mapper(new MapperConfiguration(cfg => cfg.AddProfile<EventProfile>()));
+        var mapper = new Mapper(new MapperConfiguration(cfg => cfg.AddProfile<UpdateEventProfile>()));
         var validator = Substitute.For<IValidator<Event>>();
 
         var useCase = new UpdateEventUseCase(unitOfWork, httpClient, mapper, imageService, validator);
@@ -297,7 +323,9 @@ public class EventUseCasesTests
     public async Task DeleteEventUseCase_ShouldDeleteEventAndRegistrations()
     {
         var context = CreateInMemoryContext();
-        var unitOfWork = new UnitOfWork(context);
+
+        var unitOfWork = CreateUnitOfWork(context);
+
         var imageService = Substitute.For<IImageService>();
         var useCase = new DeleteEventUseCase(unitOfWork, imageService);
 
@@ -334,7 +362,9 @@ public class EventUseCasesTests
     public async Task DeleteEventUseCase_ShouldReturnFalseIfEventNotFound()
     {
         var context = CreateInMemoryContext();
-        var unitOfWork = new UnitOfWork(context);
+
+        var unitOfWork = CreateUnitOfWork(context);
+
         var imageService = Substitute.For<IImageService>();
         var useCase = new DeleteEventUseCase(unitOfWork, imageService);
 
@@ -351,7 +381,9 @@ public class EventUseCasesTests
     public async Task GetUsersEventsUseCase_ShouldReturnUserEvents()
     {
         var context = CreateInMemoryContext();
-        var unitOfWork = new UnitOfWork(context);
+
+        var unitOfWork = CreateUnitOfWork(context);
+
         var useCase = new GetUsersEventsUseCase(unitOfWork);
 
         var user = TestDataGenerator.GenerateUser();
@@ -389,7 +421,9 @@ public class EventUseCasesTests
     public async Task GetUsersEventsUseCase_ShouldThrowIfUserNotFound()
     {
         var context = CreateInMemoryContext();
-        var unitOfWork = new UnitOfWork(context);
+
+        var unitOfWork = CreateUnitOfWork(context);
+
         var useCase = new GetUsersEventsUseCase(unitOfWork);
 
         var nonExistentUserId = Guid.NewGuid();

@@ -13,7 +13,8 @@ namespace Eventer.Application.UseCases.Category
         private readonly IMapper _mapper;
         private readonly IValidator<EventCategory> _validator;
 
-        public UpdateCategoryUseCase(IUnitOfWork unitOfWork,
+        public UpdateCategoryUseCase(
+            IUnitOfWork unitOfWork,
             IMapper mapper,
             IValidator<EventCategory> validator)
         {
@@ -23,20 +24,17 @@ namespace Eventer.Application.UseCases.Category
 
         public async Task ExecuteAsync(UpdateCategoryRequest request, CancellationToken cancellationToken)
         {
+            var categoryToValidate = _mapper.Map<EventCategory>(request);
+
+            await _validator.ValidateAndThrowAsync(categoryToValidate, cancellationToken);
+
             var categoryToUpdate = await _unitOfWork.Categories.GetByIdAsync(request.Id, cancellationToken);
             if (categoryToUpdate == null)
             {
-                throw new ArgumentException($"Category with ID {request.Id} not found");
+                throw new KeyNotFoundException($"Category with ID {request.Id} not found.");
             }
 
             _mapper.Map(request, categoryToUpdate);
-
-            var validationResult = await _validator.ValidateAsync(categoryToUpdate, cancellationToken);
-
-            if (!validationResult.IsValid)
-            {
-                throw new ValidationException(validationResult.Errors);
-            }
 
             await _unitOfWork.SaveChangesAsync();
         }

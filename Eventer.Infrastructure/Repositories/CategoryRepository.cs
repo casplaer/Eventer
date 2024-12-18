@@ -14,14 +14,11 @@ namespace Eventer.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<EventCategory?>> GetByNameAsync(string name, CancellationToken cancellationToken)
+        public async Task<IEnumerable<EventCategory>> GetByNameAsync(string name, CancellationToken cancellationToken)
         {
-            if(string.IsNullOrEmpty(name))
-            {
-                return await _context.Categories.ToListAsync(cancellationToken);
-            }
-
-            return await _context.Categories.Where(c => c.Name.Contains(name)).ToListAsync(cancellationToken);
+            return await _context.Categories
+                .Where(c => c.Name.Contains(name ?? ""))
+                .ToListAsync(cancellationToken);
         }
     }
 }

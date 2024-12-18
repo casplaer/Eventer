@@ -2,9 +2,9 @@
 using Eventer.Application.Interfaces.Auth;
 using Eventer.Application.Interfaces.Services;
 using Eventer.Application.Mappings;
-using Eventer.Application.Services;
 using Eventer.Infrastructure;
 using Eventer.Infrastructure.Data;
+using Eventer.Infrastructure.Services;
 using Eventer.Infrastructure.Validators;
 
 namespace Eventer.API.Extensions
@@ -15,9 +15,13 @@ namespace Eventer.API.Extensions
         {
             services.AddScoped<IImageService, ImageService>();
 
-            services.AddAutoMapper(typeof(EventProfile).Assembly);
-            services.AddAutoMapper(typeof(EnrollmentProfile).Assembly);
-            services.AddAutoMapper(typeof(CategoryProfile).Assembly);
+            services.AddAutoMapper(typeof(UpdateEventProfile));
+            services.AddAutoMapper(typeof(CreateEventProfile));
+            services.AddAutoMapper(typeof(UpdateEnrollmentProfile));
+            services.AddAutoMapper(typeof(CategoryProfile));
+            services.AddAutoMapper(typeof(UserProfile));
+            services.AddAutoMapper(typeof(CreateEnrollmentProfile));
+            services.AddAutoMapper(typeof(EventProfile));
 
             services.AddScoped<IUniqueFieldChecker, UniqueFieldChecker>();
 

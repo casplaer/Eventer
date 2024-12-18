@@ -2,7 +2,7 @@
 using Eventer.Domain.Models;
 using FluentValidation;
 
-namespace Eventer.Infrastructure.Validators
+namespace Eventer.Infrastructure.Validators.Categories
 {
     public class EventCategoryValidator : AbstractValidator<EventCategory>
     {

@@ -5,28 +5,33 @@ using Eventer.Domain.Interfaces.Repositories;
 
 namespace Eventer.Application.UseCases.Auth
 {
+    using AutoMapper;
+    using FluentValidation;
+
     public class LoginUserUseCase : ILoginUserUseCase
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IPasswordHasher _passwordHasher;
         private readonly IJwtProvider _jwtProvider;
+        private readonly IValidator<LoginUserRequest> _validator;
+        private readonly IMapper _mapper;
 
-        public LoginUserUseCase(IUnitOfWork unitOfWork, IPasswordHasher passwordHasher, IJwtProvider jwtProvider)
+        public LoginUserUseCase(
+            IUnitOfWork unitOfWork,
+            IJwtProvider jwtProvider,
+            IValidator<LoginUserRequest> validator,
+            IMapper mapper)
         {
             _unitOfWork = unitOfWork;
-            _passwordHasher = passwordHasher;
             _jwtProvider = jwtProvider;
+            _validator = validator;
+            _mapper = mapper;
         }
 
         public async Task<LoginResponse> Execute(LoginUserRequest request, CancellationToken cancellationToken)
         {
-            var user = await _unitOfWork.Users.GetByUserNameAsync(request.UserName, cancellationToken)
-                ?? throw new UnauthorizedAccessException("Такого пользователя не существует.");
+            await _validator.ValidateAndThrowAsync(request, cancellationToken);
 
-            if (!_passwordHasher.Verify(request.Password, user.PasswordHash))
-            {
-                throw new UnauthorizedAccessException("Неверный пароль.");
-            }
+            var user = await _unitOfWork.Users.GetByUserNameAsync(request.UserName, cancellationToken);
 
             var accessToken = _jwtProvider.GenerateAccessToken(user);
             var refreshToken = _jwtProvider.GenerateRefreshToken();
@@ -37,9 +42,10 @@ namespace Eventer.Application.UseCases.Auth
             await _unitOfWork.Users.UpdateAsync(user, cancellationToken);
             await _unitOfWork.SaveChangesAsync();
 
-            var userDTO = new UserDTO(user.UserName, user.Email, user.EventRegistrations);
+            var userDTO = _mapper.Map<UserDTO>(user);
 
             return new LoginResponse(accessToken, refreshToken, userDTO);
         }
     }
+
 }

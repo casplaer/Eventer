@@ -1,4 +1,5 @@
-﻿using Eventer.Application.Interfaces.Services;
+﻿using AutoMapper;
+using Eventer.Application.Interfaces.Services;
 using Eventer.Application.Interfaces.UseCases.Events;
 using Eventer.Domain.Contracts.Events;
 using Eventer.Domain.Interfaces.Repositories;
@@ -13,26 +14,25 @@ namespace Eventer.Application.UseCases.Events
         private readonly HttpClient _httpClient;
         private readonly IImageService _imageService;
         private readonly IValidator<Event> _validator;
+        private readonly IMapper _mapper;
         private readonly string _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "events");
 
-        public AddEventUseCase(IUnitOfWork unitOfWork, 
-                HttpClient httpClient, 
-                IImageService imageService,
-                IValidator<Event> validator)
+        public AddEventUseCase(
+            IUnitOfWork unitOfWork, 
+            HttpClient httpClient, 
+            IImageService imageService,
+            IValidator<Event> validator,
+            IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _httpClient = httpClient;
             _imageService = imageService;
             _validator = validator;
+            _mapper = mapper;
         }
 
         public async Task ExecuteAsync(CreateEventRequest request, CancellationToken cancellationToken)
         {
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request), "Request cannot be null.");
-            }
-
             var category = await _unitOfWork.Categories.GetByIdAsync(request.Category.Id, cancellationToken);
             if (category == null)
             {
@@ -43,24 +43,11 @@ namespace Eventer.Application.UseCases.Events
                ? await _imageService.UploadImagesAsync(request.Images, _uploadPath, _httpClient.BaseAddress!.ToString(), "events")
                : new List<string>();
 
-            var newEvent = new Event
-            {
-                Title = request.Title,
-                Description = request.Description,
-                StartDate = request.StartDate,
-                StartTime = request.StartTime,
-                Venue = request.Venue,
-                Category = category,
-                MaxParticipants = request.MaxParticipants,
-                ImageURLs = imagePaths
-            };
+            var newEvent = _mapper.Map<Event>(request);
+            newEvent.Category = category;
+            newEvent.ImageURLs = imagePaths;
 
-            var validationResult = await _validator.ValidateAsync(newEvent, cancellationToken);
-
-            if (!validationResult.IsValid)
-            {
-                throw new ValidationException(validationResult.Errors);
-            }
+            await _validator.ValidateAndThrowAsync(newEvent, cancellationToken);
 
             await _unitOfWork.Events.AddAsync(newEvent, cancellationToken);
             await _unitOfWork.SaveChangesAsync();

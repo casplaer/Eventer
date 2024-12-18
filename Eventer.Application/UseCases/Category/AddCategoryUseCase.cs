@@ -1,4 +1,5 @@
-﻿using Eventer.Application.Contracts.Categories;
+﻿using AutoMapper;
+using Eventer.Application.Contracts.Categories;
 using Eventer.Application.Interfaces.UseCases.Category;
 using Eventer.Domain.Interfaces.Repositories;
 using Eventer.Domain.Models;
@@ -10,26 +11,23 @@ namespace Eventer.Application.UseCases.Category
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IValidator<EventCategory> _validator;
+        private readonly IMapper _mapper;
 
-        public AddCategoryUseCase(IUnitOfWork unitOfWork,
-                IValidator<EventCategory> validator)
+        public AddCategoryUseCase(
+            IUnitOfWork unitOfWork,
+            IValidator<EventCategory> validator,
+            IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _validator = validator;
+            _mapper = mapper;
         }
 
         public async Task ExecuteAsync(CreateCategoryRequest request, CancellationToken cancellationToken)
         {
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request), "Request cannot be null.");
-            }
+            var categoryToValidate = _mapper.Map<EventCategory>(request);
 
-            var existingCategory = await _unitOfWork.Categories.GetByNameAsync(request.Name, cancellationToken);
-            if (existingCategory.Any())
-            {
-                throw new InvalidOperationException($"Category with name '{request.Name}' already exists.");
-            }
+            await _validator.ValidateAndThrowAsync(categoryToValidate, cancellationToken);
 
             var newCategory = new EventCategory
             {
@@ -37,13 +35,6 @@ namespace Eventer.Application.UseCases.Category
                 Name = request.Name.Trim(),
                 Description = request.Description,
             };
-
-            var validationResult = await _validator.ValidateAsync(newCategory, cancellationToken);
-
-            if (!validationResult.IsValid)
-            {
-                throw new ValidationException(validationResult.Errors);
-            }
 
             await _unitOfWork.Categories.AddAsync(newCategory, cancellationToken);
             await _unitOfWork.SaveChangesAsync();

@@ -2,7 +2,7 @@
 using Eventer.Domain.Models;
 using FluentValidation;
 
-namespace Eventer.Infrastructure.Validators
+namespace Eventer.Infrastructure.Validators.Events
 {
     public class EventValidator : AbstractValidator<Event>
     {
@@ -33,7 +33,8 @@ namespace Eventer.Infrastructure.Validators
                 .NotEmpty().WithMessage("Время начала это обязательное поле.");
 
             RuleFor(e => e.MaxParticipants)
-                .NotNull().WithMessage("Максимальное количество участников это обязательное поле.");
+                .NotNull().WithMessage("Максимальное количество участников это обязательное поле.")
+                .GreaterThan(0).WithMessage("Максимальное количество участников должно быть больше нуля.");
 
         }
     }

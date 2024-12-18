@@ -18,7 +18,9 @@ namespace Eventer.Infrastructure.Data
             {
                 var context = scopedServices.GetRequiredService<EventerDbContext>();
                 var hasher = scopedServices.GetRequiredService<IPasswordHasher>();
+
                 context.Database.Migrate();
+
                 Initialize(context, hasher);
             }
             catch (Exception ex)
@@ -30,26 +32,22 @@ namespace Eventer.Infrastructure.Data
 
         public static void Initialize(EventerDbContext context, IPasswordHasher hasher)
         {
-            context.Database.EnsureCreated();
-
-            if (context.Users.FirstOrDefault(u => u.Role == UserRole.Admin) == null)
+            if (!context.Users.Any(u => u.Role == UserRole.Admin))
             {
-                var adminUser = User.Create
-                (
+                var adminUser = User.Create(
                     id: Guid.NewGuid(),
                     userName: "TestAdmin",
                     email: "Admin@mail.com",
                     passwordHash: hasher.GenerateHash("123qwe")
                 );
                 adminUser.Role = UserRole.Admin;
-                adminUser.NormalizedEmail = "admin@mail.com";
-                context.Users.AddAsync(adminUser);
+                adminUser.NormalizedEmail = "ADMIN@MAIL.COM";
+                context.Users.Add(adminUser);
             }
 
-            if (context.Users.FirstOrDefault(u => u.Role == UserRole.User) == null)
+            if (!context.Users.Any(u => u.Role == UserRole.User))
             {
-                context.Users.AddAsync(User.Create
-                (
+                context.Users.Add(User.Create(
                     id: Guid.NewGuid(),
                     userName: "TestUser",
                     email: "user@mail.com",
@@ -66,7 +64,6 @@ namespace Eventer.Infrastructure.Data
                         Name = "Тестовая категория",
                         Description = "Тестовое описание"
                     },
-
                     new EventCategory
                     {
                         Name = "Test category",
@@ -75,12 +72,11 @@ namespace Eventer.Infrastructure.Data
                 };
 
                 context.Categories.AddRange(testCategories);
-                context.SaveChanges();
             }
 
             var firstCategory = context.Categories.FirstOrDefault();
 
-            if (!context.Events.Any())
+            if (firstCategory != null && !context.Events.Any())
             {
                 var testEvents = new List<Event>
                 {
@@ -126,9 +122,9 @@ namespace Eventer.Infrastructure.Data
                 };
 
                 context.Events.AddRange(testEvents);
-
-                context.SaveChanges();
             }
+
+            context.SaveChanges();
         }
     }
 }

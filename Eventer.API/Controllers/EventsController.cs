@@ -1,4 +1,5 @@
-﻿using Eventer.Application.Interfaces.UseCases.Events;
+﻿using AutoMapper;
+using Eventer.Application.Interfaces.UseCases.Events;
 using Eventer.Domain.Contracts.Events;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,14 +16,15 @@ namespace Eventer.API.Controllers
         private readonly IGetEventByIdUseCase _getEventByIdUseCase;
         private readonly IUpdateEventUseCase _updateEventUseCase;
         private readonly IDeleteEventUseCase _deleteEventUseCase;
-
+        private readonly IMapper _mapper;
         public EventsController(
             IAddEventUseCase addEventUseCase,
             IGetFilteredEventsUseCase getFilteredEventsUseCase,
             IGetUsersEventsUseCase getUsersEventsUseCase,
             IGetEventByIdUseCase getEventByIdUseCase,
             IUpdateEventUseCase updateEventUseCase,
-            IDeleteEventUseCase deleteEventUseCase)
+            IDeleteEventUseCase deleteEventUseCase,
+            IMapper mapper)
         {
             _addEventUseCase = addEventUseCase;
             _getFilteredEventsUseCase = getFilteredEventsUseCase;
@@ -30,6 +32,7 @@ namespace Eventer.API.Controllers
             _getEventByIdUseCase = getEventByIdUseCase;
             _updateEventUseCase = updateEventUseCase;
             _deleteEventUseCase = deleteEventUseCase;
+            _mapper = mapper;
         }
 
         [HttpPost]
@@ -46,17 +49,7 @@ namespace Eventer.API.Controllers
         {
             var data = await _getFilteredEventsUseCase.ExecuteAsync(request, cancellationToken);
 
-            var eventDtos = data.Items.Select(e => new EventDTO(
-                e.Id,
-                e.Title,
-                e.Description,
-                e.StartDate,
-                e.StartTime,
-                e.Venue,
-                e.Category,
-                e.MaxParticipants,
-                e.ImageURLs,
-                e.Registrations.Count)).ToList();
+            var eventDtos = _mapper.Map<List<EventDTO>>(data.Items);
 
             return Ok(new GetEventsResponse(eventDtos, data.TotalPages));
         }
@@ -66,17 +59,7 @@ namespace Eventer.API.Controllers
         {
             var data = await _getUsersEventsUseCase.ExecuteAsync(request, cancellationToken);
 
-            var eventDtos = data.Items.Select(e => new EventDTO(
-                e.Id,
-                e.Title,
-                e.Description,
-                e.StartDate,
-                e.StartTime,
-                e.Venue,
-                e.Category,
-                e.MaxParticipants,
-                e.ImageURLs,
-                e.Registrations.Count)).ToList();
+            var eventDtos = _mapper.Map<List<EventDTO>>(data.Items);
 
             return Ok(new GetEventsResponse(eventDtos, data.TotalPages));
         }

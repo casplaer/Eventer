@@ -1,14 +1,18 @@
 ﻿using Eventer.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
-using System.Net.Http;
 
-namespace Eventer.Application.Services
+namespace Eventer.Infrastructure.Services
 {
     public class ImageService : IImageService
     {
         public async Task<List<string>> UploadImagesAsync(IEnumerable<IFormFile> images, string uploadPath, string baseUrl, string imageType)
         {
             var imagePaths = new List<string>();
+
+            if (!Directory.Exists(uploadPath))
+            {
+                Directory.CreateDirectory(uploadPath);
+            }
 
             foreach (var image in images)
             {
@@ -51,6 +55,11 @@ namespace Eventer.Application.Services
                 string baseUrl,
                 string imageType)
         {
+            if (!Directory.Exists(uploadPath))
+            {
+                Directory.CreateDirectory(uploadPath);
+            }
+
             var imagePaths = new List<string>();
 
             foreach (var image in newImages)

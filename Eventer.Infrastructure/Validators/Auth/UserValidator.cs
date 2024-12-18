@@ -2,7 +2,7 @@
 using Eventer.Domain.Models;
 using FluentValidation;
 
-namespace Eventer.Infrastructure.Validators
+namespace Eventer.Infrastructure.Validators.Auth
 {
     public class UserValidator : AbstractValidator<User>
     {
@@ -11,6 +11,8 @@ namespace Eventer.Infrastructure.Validators
         public UserValidator(IUniqueFieldChecker uniqueFieldChecker)
         {
             _uniqueFieldChecker = uniqueFieldChecker;
+
+            RuleFor(u => u).NotNull().WithMessage("User cannot be null.");
 
             RuleFor(u => u.UserName)
                 .NotEmpty().WithMessage("Это поле обязательное.")
@@ -23,6 +25,14 @@ namespace Eventer.Infrastructure.Validators
                 .NotEmpty().WithMessage("Поле Email обязательное.")
                 .MaximumLength(255).WithMessage("Email не должен превышать 255 символов.")
                 .EmailAddress().WithMessage("Некорректный формат Email.");
+
+            RuleFor(u => u.RefreshToken)
+                .NotEmpty().WithMessage("RefreshToken обязателен.")
+                .MaximumLength(500).WithMessage("RefreshToken не должен превышать 500 символов.");
+
+            RuleFor(u => u.RefreshTokenExpiryTime)
+                .Must(expiry => expiry > DateTime.UtcNow)
+                .WithMessage("RefreshToken истёк или недействителен.");
         }
     }
 }

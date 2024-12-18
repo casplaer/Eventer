@@ -33,11 +33,6 @@ namespace Eventer.Application.UseCases.Events
 
         public async Task ExecuteAsync(UpdateEventRequest request, CancellationToken cancellationToken)
         {
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request), "Request cannot be null.");
-            }
-
             var eventToUpdate = await _unitOfWork.Events.GetByIdAsync(request.Id, cancellationToken);
             if (eventToUpdate == null)
             {
@@ -62,18 +57,13 @@ namespace Eventer.Application.UseCases.Events
                 existingImages: request.ExistingImages ?? new List<string>(), 
                 removedImages: request.RemovedImages ?? new List<string>(),   
                 uploadPath: _uploadPath,
-                baseUrl: new Uri(_httpClient.BaseAddress!, "events").ToString(),
+                baseUrl: _httpClient.BaseAddress!.ToString(),
                 imageType: "events"
             );
 
             eventToUpdate.ImageURLs = imagePaths;
 
-            var validationResult = await _validator.ValidateAsync(eventToUpdate, cancellationToken);
-
-            if (!validationResult.IsValid)
-            {
-                throw new ValidationException(validationResult.Errors);
-            }
+            await _validator.ValidateAndThrowAsync(eventToUpdate, cancellationToken);
 
             await _unitOfWork.Events.UpdateAsync(eventToUpdate, cancellationToken);
             await _unitOfWork.SaveChangesAsync();

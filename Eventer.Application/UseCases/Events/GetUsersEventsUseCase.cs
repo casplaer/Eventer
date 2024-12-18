@@ -18,11 +18,6 @@ namespace Eventer.Application.UseCases.Events
 
         public async Task<PaginatedResult<Event>> ExecuteAsync(UsersEventsRequest request, CancellationToken cancellationToken)
         {
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request), "Request cannot be null.");
-            }
-
             var user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
 
             if (user == null)

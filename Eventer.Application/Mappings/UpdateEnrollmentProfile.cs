@@ -4,9 +4,9 @@ using Eventer.Domain.Models;
 
 namespace Eventer.Application.Mappings
 {
-    public class EnrollmentProfile : Profile
+    public class UpdateEnrollmentProfile : Profile
     {
-        public EnrollmentProfile()
+        public UpdateEnrollmentProfile()
         {
             CreateMap<UpdateEnrollRequest, EventRegistration>()
                 .ForMember(dest => dest.Name, opt => opt.Condition(src => !string.IsNullOrEmpty(src.Name)))
