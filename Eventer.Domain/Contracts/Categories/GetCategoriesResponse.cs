@@ -1,6 +1,6 @@
 ﻿using Eventer.Domain.Models;
 
-namespace Eventer.Application.Contracts.Events
+namespace Eventer.Domain.Contracts.Categories
 {
     public record GetCategoriesResponse(IEnumerable<EventCategory> Categories);
 }

@@ -22,6 +22,7 @@ namespace Eventer.Infrastructure.Repositories
         {
             return _context.Users
                 .Include(u=>u.EventRegistrations)
+                .ThenInclude(er => er.Event)
                 .FirstOrDefaultAsync(u=>u.Id == id, cancellationToken);
         }
 

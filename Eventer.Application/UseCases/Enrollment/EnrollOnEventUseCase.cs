@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using Eventer.Application.Contracts.Enrollments;
 using Eventer.Application.Interfaces.UseCases.Enrollment;
+using Eventer.Domain.Contracts.Enrollments;
 using Eventer.Domain.Interfaces.Repositories;
 using Eventer.Domain.Models;
 using FluentValidation;

@@ -25,14 +25,13 @@ namespace Eventer.Application.UseCases.Events
                 throw new KeyNotFoundException($"User with ID {request.UserId} not found.");
             }
 
-            int page = Math.Max(1, request.Page);
-
-            var eventIds = user.EventRegistrations?
-                .Select(reg => reg.EventId)
+            var usersEvents = user.EventRegistrations
+                .Select(er => er.Event)            
+                .Where(e => e != null)                
                 .Distinct()
-                .ToList() ?? new List<Guid>();
+                .ToList();
 
-            if (!eventIds.Any())
+            if (usersEvents.Count == 0)
             {
                 return new PaginatedResult<Event>
                 {
@@ -42,17 +41,8 @@ namespace Eventer.Application.UseCases.Events
                 };
             }
 
-            var usersEvents = new List<Event>();
-            foreach (var eventId in eventIds)
-            {
-                var eventToAdd = await _unitOfWork.Events.GetByIdAsync(eventId, cancellationToken);
-                if (eventToAdd != null)
-                {
-                    usersEvents.Add(eventToAdd);
-                }
-            }
-
             int totalCount = usersEvents.Count;
+            int page = Math.Max(1, request.Page);
             int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
 
             usersEvents = usersEvents

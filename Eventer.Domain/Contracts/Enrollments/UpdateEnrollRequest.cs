@@ -1,4 +1,4 @@
-﻿namespace Eventer.Application.Contracts.Enrollments
+﻿namespace Eventer.Domain.Contracts.Enrollments
 {
     public record UpdateEnrollRequest(
         Guid EnrollmentId,

@@ -1,12 +1,11 @@
-﻿using Eventer.Application.Contracts.Auth;
-using Eventer.Application.Contracts.Enrollments;
-using Eventer.Domain.Models;
+﻿using Eventer.Domain.Models;
 using Eventer.Infrastructure.Validators.Auth;
 using Eventer.Infrastructure.Validators.Categories;
 using Eventer.Infrastructure.Validators.Enrollments;
 using Eventer.Infrastructure.Validators.Events;
-using Eventer.Infrastructure.Validators.Auth;
 using FluentValidation;
+using Eventer.Domain.Contracts.Auth;
+using Eventer.Domain.Contracts.Enrollments;
 
 namespace Eventer.API.Extensions
 {

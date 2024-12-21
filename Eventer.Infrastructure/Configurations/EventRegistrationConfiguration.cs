@@ -30,6 +30,11 @@ namespace Eventer.Infrastructure.Configurations
             builder.Property(er => er.RegistrationDate)
                 .IsRequired();
 
+            builder.HasOne(er => er.Event)
+                 .WithMany(e => e.Registrations) 
+                 .HasForeignKey(er => er.EventId)
+                 .OnDelete(DeleteBehavior.Cascade);
+
             builder.HasOne<User>()
                 .WithMany(u => u.EventRegistrations)
                 .HasForeignKey(er => er.UserId)

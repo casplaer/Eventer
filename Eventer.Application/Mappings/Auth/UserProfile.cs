@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using Eventer.Application.Contracts.Auth;
+using Eventer.Contracts.DTOs.Auth;
 using Eventer.Domain.Models;
 
-namespace Eventer.Application.Mappings
+namespace Eventer.Application.Mappings.Auth
 {
     public class UserProfile : Profile
     {

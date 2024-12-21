@@ -1,6 +1,6 @@
-﻿using Eventer.Application.Contracts.Auth;
-using Eventer.Application.Interfaces.Auth;
+﻿using Eventer.Application.Interfaces.Auth;
 using Eventer.Application.Interfaces.UseCases.Auth;
+using Eventer.Domain.Contracts.Auth;
 using Eventer.Domain.Interfaces.Repositories;
 using Eventer.Domain.Models;
 using Eventer.Domain.Utilities;

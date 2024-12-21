@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Eventer.Application.Interfaces.Services;
-using Eventer.Application.Mappings;
+using Eventer.Application.Mappings.Events;
 using Eventer.Application.UseCases.Events;
 using Eventer.Domain.Contracts.Events;
 using Eventer.Domain.Models;

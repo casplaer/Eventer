@@ -1,5 +1,5 @@
-﻿using Eventer.Application.Contracts.Enrollments;
-using Eventer.Application.Interfaces.UseCases.Enrollment;
+﻿using Eventer.Application.Interfaces.UseCases.Enrollment;
+using Eventer.Domain.Contracts.Enrollments;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;

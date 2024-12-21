@@ -1,6 +1,5 @@
 ﻿using Eventer.Domain.Enums;
 using Eventer.Domain.Utilities;
-using System.ComponentModel.DataAnnotations;
 
 namespace Eventer.Domain.Models
 {

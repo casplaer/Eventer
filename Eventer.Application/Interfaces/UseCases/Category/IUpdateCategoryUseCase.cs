@@ -1,4 +1,4 @@
-﻿using Eventer.Application.Contracts.Categories;
+﻿using Eventer.Domain.Contracts.Categories;
 
 namespace Eventer.Application.Interfaces.UseCases.Category
 {

@@ -1,11 +1,12 @@
-﻿namespace Eventer.Application.Contracts.Enrollments
+﻿namespace Eventer.Domain.Contracts.Enrollments
 {
-    public record SingleEnrollmentResponse(
-        Guid EnrollmentId,
-        Guid EventId, 
-        string Name,
-        string Surname,
-        string Email,
-        DateOnly DateOfBirth
-        );
+    public record SingleEnrollmentResponse
+    {
+        public Guid EnrollmentId { get; set; }
+        public Guid EventId { get; set; }
+        public string Name { get; set; }
+        public string Surname { get; set; }
+        public string Email { get; set; }
+        public DateOnly DateOfBirth { get; set; }
+    }
 }

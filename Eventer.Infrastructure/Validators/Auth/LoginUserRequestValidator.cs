@@ -1,5 +1,5 @@
-﻿using Eventer.Application.Contracts.Auth;
-using Eventer.Application.Interfaces.Auth;
+﻿using Eventer.Application.Interfaces.Auth;
+using Eventer.Domain.Contracts.Auth;
 using Eventer.Domain.Interfaces.Repositories;
 using FluentValidation;
 

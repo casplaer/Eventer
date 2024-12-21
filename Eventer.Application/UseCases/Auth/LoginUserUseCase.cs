@@ -1,11 +1,12 @@
-﻿using Eventer.Application.Contracts.Auth;
-using Eventer.Application.Interfaces.Auth;
+﻿using Eventer.Application.Interfaces.Auth;
 using Eventer.Application.Interfaces.UseCases.Auth;
 using Eventer.Domain.Interfaces.Repositories;
 
 namespace Eventer.Application.UseCases.Auth
 {
     using AutoMapper;
+    using Eventer.Contracts.DTOs.Auth;
+    using Eventer.Domain.Contracts.Auth;
     using FluentValidation;
 
     public class LoginUserUseCase : ILoginUserUseCase

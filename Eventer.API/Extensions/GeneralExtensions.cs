@@ -1,7 +1,10 @@
 ﻿using Eventer.Application.Interfaces;
 using Eventer.Application.Interfaces.Auth;
 using Eventer.Application.Interfaces.Services;
-using Eventer.Application.Mappings;
+using Eventer.Application.Mappings.Auth;
+using Eventer.Application.Mappings.Categories;
+using Eventer.Application.Mappings.Enrollments;
+using Eventer.Application.Mappings.Events;
 using Eventer.Infrastructure;
 using Eventer.Infrastructure.Data;
 using Eventer.Infrastructure.Services;
@@ -22,6 +25,8 @@ namespace Eventer.API.Extensions
             services.AddAutoMapper(typeof(UserProfile));
             services.AddAutoMapper(typeof(CreateEnrollmentProfile));
             services.AddAutoMapper(typeof(EventProfile));
+            services.AddAutoMapper(typeof(SingleEnrollmentResponseProfile));
+            services.AddAutoMapper(typeof(SingleEventResponseProfile));
 
             services.AddScoped<IUniqueFieldChecker, UniqueFieldChecker>();
 

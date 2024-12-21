@@ -1,9 +1,4 @@
-﻿using Eventer.Application.Contracts.Auth;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Eventer.Domain.Contracts.Auth;
 
 namespace Eventer.Application.Interfaces.UseCases.Auth
 {

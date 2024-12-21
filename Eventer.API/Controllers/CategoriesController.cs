@@ -1,6 +1,5 @@
-﻿using Eventer.Application.Contracts.Categories;
-using Eventer.Application.Contracts.Events;
-using Eventer.Application.Interfaces.UseCases.Category;
+﻿using Eventer.Application.Interfaces.UseCases.Category;
+using Eventer.Domain.Contracts.Categories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Eventer.API.Controllers

@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using Eventer.Application.Contracts.Categories;
+using Eventer.Domain.Contracts.Categories;
 using Eventer.Domain.Models;
 
-namespace Eventer.Application.Mappings
+namespace Eventer.Application.Mappings.Categories
 {
     public class CategoryProfile : Profile
     {

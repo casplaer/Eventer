@@ -7,6 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Interfaces\Contracts\**" />
+    <Compile Remove="Interfaces\DTOs\**" />
+    <EmbeddedResource Remove="Interfaces\Contracts\**" />
+    <EmbeddedResource Remove="Interfaces\DTOs\**" />
+    <None Remove="Interfaces\Contracts\**" />
+    <None Remove="Interfaces\DTOs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
   </ItemGroup>
 

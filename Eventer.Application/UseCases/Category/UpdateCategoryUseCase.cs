@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using Eventer.Application.Contracts.Categories;
 using Eventer.Application.Interfaces.UseCases.Category;
+using Eventer.Domain.Contracts.Categories;
 using Eventer.Domain.Interfaces.Repositories;
 using Eventer.Domain.Models;
 using FluentValidation;
@@ -20,6 +20,7 @@ namespace Eventer.Application.UseCases.Category
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _validator = validator;
         }
 
         public async Task ExecuteAsync(UpdateCategoryRequest request, CancellationToken cancellationToken)

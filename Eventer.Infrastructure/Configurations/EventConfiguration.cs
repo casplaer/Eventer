@@ -43,7 +43,7 @@ namespace Eventer.Infrastructure.Configurations
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(e => e.Registrations)
-                .WithOne()
+                .WithOne(r => r.Event)
                 .HasForeignKey(r => r.EventId)
                 .OnDelete(DeleteBehavior.Cascade);
         }

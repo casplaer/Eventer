@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using Eventer.Application.Contracts.Categories;
 using Eventer.Application.Interfaces.UseCases.Category;
+using Eventer.Domain.Contracts.Categories;
 using Eventer.Domain.Interfaces.Repositories;
 using Eventer.Domain.Models;
 using FluentValidation;

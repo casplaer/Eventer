@@ -2,7 +2,7 @@
 using Eventer.Domain.Contracts.Events;
 using Eventer.Domain.Models;
 
-namespace Eventer.Application.Mappings
+namespace Eventer.Application.Mappings.Events
 {
     public class CreateEventProfile : Profile
     {

@@ -1,4 +1,4 @@
-﻿using Eventer.Application.Contracts.Events;
+﻿using AutoMapper;
 using Eventer.Application.Interfaces.UseCases.Events;
 using Eventer.Domain.Contracts.Events;
 using Eventer.Domain.Interfaces.Repositories;
@@ -8,10 +8,14 @@ namespace Eventer.Application.UseCases.Events
     public class GetEventByIdUseCase : IGetEventByIdUseCase
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public GetEventByIdUseCase(IUnitOfWork unitOfWork)
+        public GetEventByIdUseCase(
+            IUnitOfWork unitOfWork,
+            IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         public async Task<SingleEventResponse?> ExecuteAsync(Guid id, CancellationToken cancellationToken)
@@ -23,20 +27,7 @@ namespace Eventer.Application.UseCases.Events
                 throw new KeyNotFoundException($"Event with ID '{id}' not found.");
             }
 
-            int regs = eventToReturn.Registrations?.Count ?? 0;
-
-            return new SingleEventResponse(
-                eventToReturn.Id,
-                eventToReturn.Title,
-                eventToReturn.Description,
-                eventToReturn.StartDate,
-                eventToReturn.StartTime,
-                eventToReturn.Venue,
-                eventToReturn.Category,
-                eventToReturn.MaxParticipants,
-                regs,
-                eventToReturn.ImageURLs
-            );
+            return _mapper.Map<SingleEventResponse>(eventToReturn);
         }
     }
 }
