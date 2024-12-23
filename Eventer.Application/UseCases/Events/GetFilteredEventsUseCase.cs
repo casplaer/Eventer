@@ -1,9 +1,9 @@
 ﻿using Eventer.Application.Interfaces.UseCases.Events;
-using Eventer.Domain.Interfaces.Repositories;
+using Eventer.Contracts.Requests.Events;
 using Eventer.Domain.Models;
 using Microsoft.EntityFrameworkCore;
-using Eventer.Domain.Contracts.Events;
 using Eventer.Domain.Contracts;
+using Eventer.Domain.Interfaces.Repositories;
 
 namespace Eventer.Application.UseCases.Events
 {
@@ -24,7 +24,13 @@ namespace Eventer.Application.UseCases.Events
                 throw new ArgumentNullException(nameof(request), "Request cannot be null.");
             }
 
-            return await _unitOfWork.Events.GetFilteredEventsAsync(request, cancellationToken);
+            return await _unitOfWork.Events.GetFilteredEventsAsync(
+                request.Title,
+                request.Date,
+                request.Venue,
+                request.CategoryId,
+                request.Page, 
+                cancellationToken);
         }
     }
 

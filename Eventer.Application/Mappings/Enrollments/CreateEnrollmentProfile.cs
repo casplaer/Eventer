@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Eventer.Domain.Contracts.Enrollments;
+using Eventer.Contracts.Requests.Enrollments;
 using Eventer.Domain.Models;
 
 namespace Eventer.Application.Mappings.Enrollments

@@ -14,7 +14,7 @@ const EnrolledUsersPage = () => {
             try {
                 const response = await apiClient.get(`/enrollments/users-enrolled/${id}`);
                 console.log(response.data);
-                setUsers(response.data);
+                setUsers(response.data.$values);
             } catch (err) {
                 console.error("Ошибка при загрузке пользователей:", err.response?.data || err.message);
                 setError("Не удалось загрузить пользователей. Попробуйте позже.");

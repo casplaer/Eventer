@@ -2,11 +2,10 @@
 using Eventer.Application.Interfaces.Services;
 using Eventer.Application.Mappings.Events;
 using Eventer.Application.UseCases.Events;
-using Eventer.Domain.Contracts.Events;
+using Eventer.Contracts.Requests.Events;
 using Eventer.Domain.Models;
 using Eventer.Infrastructure.Data;
 using Eventer.Infrastructure.Repositories;
-using Eventer.Infrastructure.Validators;
 using Eventer.Tests;
 using FluentValidation;
 using FluentValidation.Results;

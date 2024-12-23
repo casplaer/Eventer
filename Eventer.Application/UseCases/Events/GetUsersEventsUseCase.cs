@@ -1,8 +1,8 @@
 ﻿using Eventer.Application.Interfaces.UseCases.Events;
-using Eventer.Domain.Interfaces.Repositories;
+using Eventer.Contracts.Requests.Events;
 using Eventer.Domain.Models;
 using Eventer.Domain.Contracts;
-using Eventer.Domain.Contracts.Events;
+using Eventer.Domain.Interfaces.Repositories;
 
 namespace Eventer.Application.UseCases.Events
 {

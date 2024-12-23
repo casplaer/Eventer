@@ -41,8 +41,6 @@ const EditEventPage = () => {
                 const response = await apiClient.get(`/events/${id}`);
                 const event = response.data;
 
-                console.log(event);
-
                 setFormData({
                     title: event.title,
                     description: event.description,
@@ -53,7 +51,7 @@ const EditEventPage = () => {
                     maxParticipants: event.maxParticipants,
                 });
 
-                setExistingImages(event.images || []);
+                setExistingImages(event.images.$values || []);
 
             } catch (err) {
                 const errorMessage = err.response?.data?.message || "Неизвестная ошибка.";
@@ -64,7 +62,7 @@ const EditEventPage = () => {
         const fetchCategories = async () => {
             try {
                 const response = await apiClient.get("/categories");
-                setCategories(response.data.categories);
+                setCategories(response.data.categories.$values);
             } catch (err) {
                 console.error("Ошибка при загрузке категорий:", err);
                 setError("Не удалось загрузить категории.");

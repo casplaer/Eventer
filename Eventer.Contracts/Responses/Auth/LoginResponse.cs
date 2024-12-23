@@ -1,6 +1,6 @@
 ﻿using Eventer.Contracts.DTOs.Auth;
 
-namespace Eventer.Domain.Contracts.Auth
+namespace Eventer.Contracts.Responses.Auth
 {
     public record LoginResponse(
         string AccessToken,

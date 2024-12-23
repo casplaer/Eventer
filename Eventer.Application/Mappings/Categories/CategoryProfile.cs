@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Eventer.Domain.Contracts.Categories;
+using Eventer.Contracts.Requests.Categories;
 using Eventer.Domain.Models;
 
 namespace Eventer.Application.Mappings.Categories

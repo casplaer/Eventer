@@ -1,4 +1,4 @@
-﻿namespace Eventer.Domain.Contracts.Events
+﻿namespace Eventer.Contracts.Requests.Events
 {
     public record GetEventsRequest(
         string? Title,

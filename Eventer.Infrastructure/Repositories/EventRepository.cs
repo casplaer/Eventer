@@ -1,5 +1,4 @@
 ﻿using Eventer.Domain.Contracts;
-using Eventer.Domain.Contracts.Events;
 using Eventer.Domain.Interfaces.Repositories;
 using Eventer.Domain.Models;
 using Eventer.Infrastructure.Data;
@@ -28,7 +27,13 @@ namespace Eventer.Infrastructure.Repositories
             return result;
         }
 
-        public async Task<PaginatedResult<Event>> GetFilteredEventsAsync(GetEventsRequest request, CancellationToken cancellationToken)
+        public async Task<PaginatedResult<Event>> GetFilteredEventsAsync(
+            string? title,
+            DateOnly? date,
+            string? venue,
+            Guid? categoryId,
+            int page, 
+            CancellationToken cancellationToken)
         {
             var query = _context.Events
                         .Include(e => e.Category)
@@ -36,13 +41,13 @@ namespace Eventer.Infrastructure.Repositories
                         .AsQueryable();
 
             query = query
-                    .ApplyFilter(e => e.Title.Contains(request.Title!), !string.IsNullOrEmpty(request.Title))
-                    .ApplyFilter(e => e.StartDate == request.Date!.Value, request.Date.HasValue)
-                    .ApplyFilter(e => e.Venue.Contains(request.Venue!), !string.IsNullOrEmpty(request.Venue))
-                    .ApplyFilter(e => e.Category.Id == request.CategoryId!.Value, request.CategoryId.HasValue);
+                    .ApplyFilter(e => e.Title.Contains(title!), !string.IsNullOrEmpty(title))
+                    .ApplyFilter(e => e.StartDate == date!.Value, date.HasValue)
+                    .ApplyFilter(e => e.Venue.Contains(venue!), !string.IsNullOrEmpty(venue))
+                    .ApplyFilter(e => e.Category.Id == categoryId!.Value, categoryId.HasValue);
 
             var totalCount = await query.CountAsync(cancellationToken);
-            var skip = (Math.Max(1, request.Page) - 1) * _pageSize;
+            var skip = (Math.Max(1, page) - 1) * _pageSize;
             var items = await query.Skip(skip).Take(_pageSize).ToListAsync(cancellationToken);
 
             return new PaginatedResult<Event>

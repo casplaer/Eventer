@@ -1,9 +1,9 @@
 ﻿using Eventer.Domain.Models;
+using Microsoft.AspNetCore.Http;
 
-namespace Eventer.Domain.Contracts.Events
+namespace Eventer.Contracts.Requests.Events
 {
-    public record EventDTO(
-        Guid Id,
+    public record CreateEventRequest(
         string Title,
         string Description,
         DateOnly StartDate,
@@ -11,6 +11,5 @@ namespace Eventer.Domain.Contracts.Events
         string Venue,
         EventCategory Category,
         int MaxParticipants,
-        List<string>? ImageURLs,
-        int CurrentRegistrations);
+        IEnumerable<IFormFile>? Images);
 }

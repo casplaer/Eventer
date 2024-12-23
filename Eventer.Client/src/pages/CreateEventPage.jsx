@@ -35,7 +35,7 @@ const CreateEventPage = () => {
         const fetchCategories = async () => {
             try {
                 const response = await apiClient.get("/categories");
-                const categoriesData = response.data.categories;
+                const categoriesData = response.data.categories.$values;
 
                 setCategories(categoriesData);
 

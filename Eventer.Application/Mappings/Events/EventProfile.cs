@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Eventer.Domain.Contracts.Events;
+using Eventer.Contracts.DTOs.Events;
 using Eventer.Domain.Models;
 
 namespace Eventer.Application.Mappings.Events

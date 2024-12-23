@@ -30,9 +30,7 @@ const EventsPage = () => {
                 },
             });
 
-            console.log(response.data);
-
-            setEvents(response.data.events);
+            setEvents(response.data.events.$values);
             setTotalPages(response.data.totalPages);
             setLoading(false);
         } catch (err) {
@@ -48,7 +46,7 @@ const EventsPage = () => {
     const fetchCategories = async () => {
         try {
             const response = await apiClient.get("/categories");
-            setCategories(response.data.categories);
+            setCategories(response.data.categories.$values);
         } catch (err) {
             console.error("Ошибка при загрузке категорий:", err.response?.data?.message || err.message);
             setError("Не удалось загрузить категории.");

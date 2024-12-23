@@ -1,4 +1,4 @@
-﻿using Eventer.Domain.Contracts.Enrollments;
+﻿using Eventer.Contracts.Responses.Enrollments;
 
 namespace Eventer.Application.Interfaces.UseCases.Enrollment
 {

@@ -1,4 +1,4 @@
-﻿using Eventer.Domain.Contracts.Auth;
+﻿using Eventer.Contracts.Requests.Auth;
 
 namespace Eventer.Application.Interfaces.UseCases.Auth
 {

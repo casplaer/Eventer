@@ -1,5 +1,5 @@
-﻿using Eventer.Domain.Models;
-using Eventer.Domain.Contracts.Events;
+﻿using Eventer.Contracts.Requests.Events;
+using Eventer.Domain.Models;
 using Eventer.Domain.Contracts;
 
 namespace Eventer.Application.Interfaces.UseCases.Events

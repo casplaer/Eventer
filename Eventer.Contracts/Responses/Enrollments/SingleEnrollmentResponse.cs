@@ -1,4 +1,4 @@
-﻿namespace Eventer.Domain.Contracts.Enrollments
+﻿namespace Eventer.Contracts.Responses.Enrollments
 {
     public record SingleEnrollmentResponse
     {

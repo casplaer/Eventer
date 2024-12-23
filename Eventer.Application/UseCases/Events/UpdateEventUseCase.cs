@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Eventer.Application.Interfaces.Services;
 using Eventer.Application.Interfaces.UseCases.Events;
-using Eventer.Domain.Contracts.Events;
+using Eventer.Contracts.Requests.Events;
 using Eventer.Domain.Interfaces.Repositories;
 using Eventer.Domain.Models;
 using FluentValidation;

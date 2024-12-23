@@ -1,6 +1,6 @@
 ﻿using Eventer.Domain.Models;
 
-namespace Eventer.Domain.Contracts.Events
+namespace Eventer.Contracts.Responses.Events
 {
     public record SingleEventResponse
     {

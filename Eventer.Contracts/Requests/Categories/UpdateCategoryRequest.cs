@@ -1,4 +1,4 @@
-﻿namespace Eventer.Domain.Contracts.Categories
+﻿namespace Eventer.Contracts.Requests.Categories
 {
     public record UpdateCategoryRequest(
         Guid Id,

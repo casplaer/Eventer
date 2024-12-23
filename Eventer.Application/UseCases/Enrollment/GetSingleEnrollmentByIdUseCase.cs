@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Eventer.Application.Interfaces.UseCases.Enrollment;
-using Eventer.Domain.Contracts.Enrollments;
+using Eventer.Contracts.Responses.Enrollments;
 using Eventer.Domain.Interfaces.Repositories;
 
 namespace Eventer.Application.UseCases.Enrollment

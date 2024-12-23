@@ -1,4 +1,4 @@
-﻿using Eventer.Domain.Contracts.Events;
+﻿using Eventer.Contracts.Responses.Events;
 
 namespace Eventer.Application.Interfaces.UseCases.Events
 {

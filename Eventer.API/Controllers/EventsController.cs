@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Eventer.Application.Interfaces.UseCases.Events;
-using Eventer.Domain.Contracts.Events;
+using Eventer.Contracts.DTOs.Events;
+using Eventer.Contracts.Requests.Events;
+using Eventer.Contracts.Responses.Events;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

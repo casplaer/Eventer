@@ -31,7 +31,7 @@ const AdminPage = () => {
                     page,
                 },
             });
-            setEvents(response.data.events);
+            setEvents(response.data.events.$values);
             setTotalPages(response.data.totalPages);
             setLoading(false);
         } catch (err) {

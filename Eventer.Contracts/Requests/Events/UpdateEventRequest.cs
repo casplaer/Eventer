@@ -1,7 +1,7 @@
 ﻿using Eventer.Domain.Models;
 using Microsoft.AspNetCore.Http;
 
-namespace Eventer.Domain.Contracts.Events
+namespace Eventer.Contracts.Requests.Events
 {
     public record UpdateEventRequest(Guid Id,
         string? Title,

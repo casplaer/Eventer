@@ -32,7 +32,7 @@ const UserEventsPage = () => {
                     },
                 });
 
-                setEvents(response.data.events);
+                setEvents(response.data.events.$values);
             } catch (err) {
                 console.error("Ошибка при загрузке событий:", err.response?.data || err.message);
                 setError("Не удалось загрузить события. Попробуйте позже.");

@@ -1,4 +1,6 @@
-﻿namespace Eventer.Contracts.DTOs.Auth
+﻿using Eventer.Domain.Models;
+
+namespace Eventer.Contracts.DTOs.Auth
 {
     public record UserDTO
     {

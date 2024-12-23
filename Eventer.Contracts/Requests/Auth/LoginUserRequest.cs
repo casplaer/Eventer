@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Eventer.Domain.Contracts.Auth
+namespace Eventer.Contracts.Requests.Auth
 {
     public record LoginUserRequest(
         [Required] string UserName,

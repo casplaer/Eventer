@@ -15,6 +15,8 @@ Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "Eventer.Client", "Eventer.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eventer.Tests", "Eventer.Tests\Eventer.Tests.csproj", "{6C6DCE8E-75DD-49D8-9AA7-99C75D01B8F6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eventer.Contracts", "Eventer.Contracts\Eventer.Contracts.csproj", "{D582F476-0DF2-49D8-8C07-4EEFD2E280C4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,10 @@ Global
 		{6C6DCE8E-75DD-49D8-9AA7-99C75D01B8F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C6DCE8E-75DD-49D8-9AA7-99C75D01B8F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C6DCE8E-75DD-49D8-9AA7-99C75D01B8F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D582F476-0DF2-49D8-8C07-4EEFD2E280C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D582F476-0DF2-49D8-8C07-4EEFD2E280C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D582F476-0DF2-49D8-8C07-4EEFD2E280C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D582F476-0DF2-49D8-8C07-4EEFD2E280C4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

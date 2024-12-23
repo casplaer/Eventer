@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Eventer.Application.Interfaces.UseCases.Events;
-using Eventer.Domain.Contracts.Events;
+using Eventer.Contracts.Responses.Events;
 using Eventer.Domain.Interfaces.Repositories;
 
 namespace Eventer.Application.UseCases.Events

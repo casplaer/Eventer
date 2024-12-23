@@ -1,5 +1,5 @@
 ﻿using Eventer.Application.Interfaces.UseCases.Auth;
-using Eventer.Domain.Contracts.Auth;
+using Eventer.Contracts.Requests.Auth;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Eventer.API.Controllers

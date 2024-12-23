@@ -1,5 +1,5 @@
 ﻿using Eventer.Application.Interfaces;
-using Eventer.Domain.Contracts.Enrollments;
+using Eventer.Contracts.Requests.Enrollments;
 using Eventer.Domain.Interfaces.Repositories;
 using Eventer.Domain.Models;
 using FluentValidation;
