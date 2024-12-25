@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Eventer.Application.Exceptions;
 using Eventer.Application.Interfaces.UseCases.Category;
 using Eventer.Contracts.Requests.Categories;
 using Eventer.Domain.Interfaces.Repositories;
@@ -32,7 +33,7 @@ namespace Eventer.Application.UseCases.Category
             var categoryToUpdate = await _unitOfWork.Categories.GetByIdAsync(request.Id, cancellationToken);
             if (categoryToUpdate == null)
             {
-                throw new KeyNotFoundException($"Category with ID {request.Id} not found.");
+                throw new NotFoundException($"Category with ID {request.Id} not found.");
             }
 
             _mapper.Map(request, categoryToUpdate);

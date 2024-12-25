@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Eventer.Application.Exceptions;
 using Eventer.Application.Interfaces.UseCases.Enrollment;
 using Eventer.Contracts.Responses.Enrollments;
 using Eventer.Domain.Interfaces.Repositories;
@@ -23,7 +24,7 @@ namespace Eventer.Application.UseCases.Enrollment
             var enrollment = await _unitOfWork.Registrations.GetByIdAsync(id, cancellationToken);
             if (enrollment == null)
             {
-                throw new KeyNotFoundException($"Enrollment with ID {id} not found.");
+                throw new NotFoundException($"Enrollment with ID {id} not found.");
             }
 
             return _mapper.Map<SingleEnrollmentResponse>(enrollment);

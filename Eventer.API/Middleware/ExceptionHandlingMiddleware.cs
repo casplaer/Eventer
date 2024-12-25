@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using System.Net;
 using System.Text.Json;
+using Eventer.Application.Exceptions;
 
 namespace Eventer.API.Middleware
 {
@@ -51,18 +52,28 @@ namespace Eventer.API.Middleware
                     break;
 
                 case UnauthorizedAccessException:
-                    statusCode = StatusCodes.Status403Forbidden;
+                    statusCode = StatusCodes.Status401Unauthorized;
                     message = exception.Message;
                     break;
 
-                case KeyNotFoundException:
+                case NotFoundException notFoundException:
                     statusCode = StatusCodes.Status404NotFound;
-                    message = exception.Message;
+                    message = notFoundException.Message;
                     break;
 
                 case InvalidOperationException:
                     statusCode = StatusCodes.Status409Conflict;
                     message = exception.Message;
+                    break;
+
+                case AlreadyExistsException alreadyExistsException:
+                    statusCode = StatusCodes.Status409Conflict;
+                    message = alreadyExistsException.Message;
+                    break;
+
+                case BadRequestException barRequestException:
+                    statusCode = StatusCodes.Status400BadRequest;
+                    message = barRequestException.Message;
                     break;
 
                 default:

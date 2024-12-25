@@ -1,7 +1,5 @@
 using Eventer.API.Extensions;
 using Eventer.Infrastructure.Data;
-using Eventer.Infrastructure.Migrations;
-using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +10,7 @@ builder.Services.AddControllers()
 {
     options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
 });
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCustomSwagger();
 builder.Services.AddCustomCors();

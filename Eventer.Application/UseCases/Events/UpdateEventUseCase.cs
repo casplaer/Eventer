@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Eventer.Application.Exceptions;
+using Eventer.Application.Interfaces;
 using Eventer.Application.Interfaces.Services;
 using Eventer.Application.Interfaces.UseCases.Events;
 using Eventer.Contracts.Requests.Events;
@@ -17,18 +19,21 @@ namespace Eventer.Application.UseCases.Events
         private readonly IValidator<Event> _validator;
         private readonly string _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "events");
         private readonly IMapper _mapper;
+        private readonly IUniqueFieldChecker _uniqueFieldChecker;
 
         public UpdateEventUseCase(IUnitOfWork unitOfWork, 
             HttpClient httpClient, 
             IMapper mapper,
             IImageService imageService,
-            IValidator<Event> validator)
+            IValidator<Event> validator,
+            IUniqueFieldChecker uniqueFieldChecker)
         {
             _unitOfWork = unitOfWork;
             _httpClient = httpClient;
             _mapper = mapper;
             _imageService = imageService;
             _validator = validator;
+            _uniqueFieldChecker = uniqueFieldChecker;
         }
 
         public async Task ExecuteAsync(UpdateEventRequest request, CancellationToken cancellationToken)
@@ -36,7 +41,12 @@ namespace Eventer.Application.UseCases.Events
             var eventToUpdate = await _unitOfWork.Events.GetByIdAsync(request.Id, cancellationToken);
             if (eventToUpdate == null)
             {
-                throw new KeyNotFoundException($"Event with ID {request.Id} not found.");
+                throw new NotFoundException($"Событие с ID {request.Id} не найдено.");
+            }
+
+            if (!await _uniqueFieldChecker.IsUniqueAsync<Event>("Title", request.Title, request.Id))
+            {
+                throw new AlreadyExistsException("Событие с таким названием уже существует.");
             }
 
             _mapper.Map(request, eventToUpdate);
@@ -46,7 +56,7 @@ namespace Eventer.Application.UseCases.Events
                 var category = await _unitOfWork.Categories.GetByIdAsync(request.Category.Id, cancellationToken);
                 if (category == null)
                 {
-                    throw new KeyNotFoundException($"Category with ID {request.Category.Id} not found.");
+                    throw new NotFoundException($"Категория с ID {request.Category.Id} не найдена.");
                 }
 
                 eventToUpdate.Category = category;

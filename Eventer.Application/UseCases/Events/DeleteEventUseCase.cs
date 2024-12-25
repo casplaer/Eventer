@@ -28,10 +28,7 @@ namespace Eventer.Application.UseCases.Events
 
             if (eventToDelete.Registrations != null && eventToDelete.Registrations.Any())
             {
-                foreach (var registration in eventToDelete.Registrations)
-                {
-                    await _unitOfWork.Registrations.DeleteAsync(registration, cancellationToken);
-                }
+                await _unitOfWork.Registrations.RemoveRangeAsync(eventToDelete.Registrations, cancellationToken);
             }
 
             _imageService.DeleteImages(eventToDelete.ImageURLs, _uploadPath);

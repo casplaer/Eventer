@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Eventer.Application.Exceptions;
+using Eventer.Application.Interfaces;
 using Eventer.Application.Interfaces.UseCases.Enrollment;
 using Eventer.Contracts.Requests.Enrollments;
 using Eventer.Domain.Interfaces.Repositories;
@@ -10,25 +12,33 @@ namespace Eventer.Application.UseCases.Enrollment
     public class EnrollOnEventUseCase : IEnrollOnEventUseCase
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IValidator<EnrollRequest> _validator;
         private readonly IMapper _mapper;
+        private readonly IUniqueFieldChecker _uniqueFieldChecker;
 
         public EnrollOnEventUseCase(
             IUnitOfWork unitOfWork,
-            IValidator<EnrollRequest> validator,
-            IMapper mapper)
+            IMapper mapper,
+            IUniqueFieldChecker uniqueFieldChecker)
         {
             _unitOfWork = unitOfWork;
-            _validator = validator;
             _mapper = mapper;
+            _uniqueFieldChecker = uniqueFieldChecker;
         }
 
         public async Task ExecuteAsync(EnrollRequest request, Guid userId, CancellationToken cancellationToken)
         {
-            await _validator.ValidateAndThrowAsync(request, cancellationToken);
+            if (!await _uniqueFieldChecker.IsUniqueAsync<EventRegistration>("Email", request.Email))
+            {
+                throw new AlreadyExistsException("Пользователь с таким Email уже зарегистрирован.");
+            }
 
             var userToEnroll = await _unitOfWork.Users.GetByIdAsync(userId, cancellationToken);
             var eventToEnrollOn = await _unitOfWork.Events.GetByIdAsync(request.EventId, cancellationToken);
+
+            if (eventToEnrollOn == null)
+            {
+                throw new NotFoundException("Событие с таким ID не найдено.");
+            }
 
             var registrationToCreate = _mapper.Map<EventRegistration>(request);
 

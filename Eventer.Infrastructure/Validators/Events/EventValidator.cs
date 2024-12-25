@@ -6,18 +6,13 @@ namespace Eventer.Infrastructure.Validators.Events
 {
     public class EventValidator : AbstractValidator<Event>
     {
-        private readonly IUniqueFieldChecker _uniqueFieldChecker;
 
-        public EventValidator(IUniqueFieldChecker uniqueFieldChecker)
+        public EventValidator()
         {
-            _uniqueFieldChecker = uniqueFieldChecker;
 
             RuleFor(e => e.Title)
                 .NotEmpty().WithMessage("Название необходимо.")
-                .MaximumLength(50).WithMessage("Длина названия не должна превышать 50 символов.")
-                .MustAsync(async (e, title, cancellation) =>
-                    await _uniqueFieldChecker.IsUniqueAsync<Event>("Title", title, e.Id))
-                .WithMessage("Событие с таким названием уже существует.");
+                .MaximumLength(50).WithMessage("Длина названия не должна превышать 50 символов.");
 
             RuleFor(e => e.Description)
                 .MaximumLength(500).WithMessage("Длина описания не должна превышать 500 символов.");

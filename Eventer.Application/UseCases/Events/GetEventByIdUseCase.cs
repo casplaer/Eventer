@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Eventer.Application.Exceptions;
 using Eventer.Application.Interfaces.UseCases.Events;
 using Eventer.Contracts.Responses.Events;
 using Eventer.Domain.Interfaces.Repositories;
@@ -24,7 +25,7 @@ namespace Eventer.Application.UseCases.Events
 
             if (eventToReturn == null)
             {
-                throw new KeyNotFoundException($"Event with ID '{id}' not found.");
+                throw new NotFoundException($"Event with ID '{id}' not found.");
             }
 
             return _mapper.Map<SingleEventResponse>(eventToReturn);

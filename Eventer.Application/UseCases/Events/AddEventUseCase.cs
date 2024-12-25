@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Eventer.Application.Exceptions;
+using Eventer.Application.Interfaces;
 using Eventer.Application.Interfaces.Services;
 using Eventer.Application.Interfaces.UseCases.Events;
 using Eventer.Contracts.Requests.Events;
@@ -15,6 +17,7 @@ namespace Eventer.Application.UseCases.Events
         private readonly IImageService _imageService;
         private readonly IValidator<Event> _validator;
         private readonly IMapper _mapper;
+        private readonly IUniqueFieldChecker _uniqueFieldChecker;
         private readonly string _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "events");
 
         public AddEventUseCase(
@@ -22,13 +25,15 @@ namespace Eventer.Application.UseCases.Events
             HttpClient httpClient, 
             IImageService imageService,
             IValidator<Event> validator,
-            IMapper mapper)
+            IMapper mapper,
+            IUniqueFieldChecker uniqueFieldChecker)
         {
             _unitOfWork = unitOfWork;
             _httpClient = httpClient;
             _imageService = imageService;
             _validator = validator;
             _mapper = mapper;
+            _uniqueFieldChecker = uniqueFieldChecker;
         }
 
         public async Task ExecuteAsync(CreateEventRequest request, CancellationToken cancellationToken)
@@ -36,7 +41,12 @@ namespace Eventer.Application.UseCases.Events
             var category = await _unitOfWork.Categories.GetByIdAsync(request.Category.Id, cancellationToken);
             if (category == null)
             {
-                throw new KeyNotFoundException($"Category with ID {request.Category.Id} not found.");
+                throw new NotFoundException($"Категория с ID {request.Category.Id} не найдена.");
+            }
+
+            if (!await _uniqueFieldChecker.IsUniqueAsync<Event>("Title", request.Title))
+            {
+                throw new AlreadyExistsException("Событие с таким названием уже существует.");
             }
 
             var imagePaths = request.Images != null && request.Images.Any()

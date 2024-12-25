@@ -6,6 +6,7 @@ using Eventer.Infrastructure.Validators.Categories;
 using Eventer.Infrastructure.Validators.Enrollments;
 using Eventer.Infrastructure.Validators.Events;
 using FluentValidation;
+using FluentValidation.AspNetCore;
 
 namespace Eventer.API.Extensions
 {
@@ -18,9 +19,12 @@ namespace Eventer.API.Extensions
             services.AddScoped<IValidator<UpdateEnrollRequest>, UpdateEnrollRequestValidator>();
             services.AddScoped<IValidator<LoginUserRequest>, LoginUserRequestValidator>();
             services.AddScoped<IValidator<Event>, EventValidator>();
-            services.AddScoped<IValidator<User>, UserValidator>();
             services.AddScoped<IValidator<EventCategory>, EventCategoryValidator>();
-            services.AddScoped<IValidator<string>, RefreshTokenValidator>();
+            services.AddControllers()
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<UpdateEnrollRequestValidator>())
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<EnrollRequestValidator>())
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<LoginUserRequestValidator>())
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<RegisterUserRequestValidator>());
 
             return services;
         }

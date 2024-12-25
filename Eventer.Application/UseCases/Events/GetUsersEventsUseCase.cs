@@ -1,4 +1,5 @@
-﻿using Eventer.Application.Interfaces.UseCases.Events;
+﻿using Eventer.Application.Exceptions;
+using Eventer.Application.Interfaces.UseCases.Events;
 using Eventer.Contracts.Requests.Events;
 using Eventer.Domain.Models;
 using Eventer.Domain.Contracts;
@@ -22,12 +23,12 @@ namespace Eventer.Application.UseCases.Events
 
             if (user == null)
             {
-                throw new KeyNotFoundException($"User with ID {request.UserId} not found.");
+                throw new NotFoundException($"User with ID {request.UserId} not found.");
             }
 
             var usersEvents = user.EventRegistrations
                 .Select(er => er.Event)            
-                .Where(e => e != null)                
+                .Where(e => e != null)                   
                 .Distinct()
                 .ToList();
 

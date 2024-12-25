@@ -1,4 +1,5 @@
-﻿using Eventer.Application.Interfaces.Auth;
+﻿using Eventer.Application.Exceptions;
+using Eventer.Application.Interfaces.Auth;
 using Eventer.Application.Interfaces.UseCases.Auth;
 using Eventer.Contracts.Requests.Auth;
 using Eventer.Domain.Interfaces.Repositories;
@@ -12,21 +13,31 @@ namespace Eventer.Application.UseCases.Auth
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IPasswordHasher _passwordHasher;
-        private readonly IValidator<RegisterUserRequest> _validator;
 
         public RegisterUserUseCase(
             IUnitOfWork unitOfWork,
-            IPasswordHasher passwordHasher,
-            IValidator<RegisterUserRequest> validator)
+            IPasswordHasher passwordHasher)
         {
             _unitOfWork = unitOfWork;
             _passwordHasher = passwordHasher;
-            _validator = validator;
         }
 
         public async Task Execute(RegisterUserRequest request, CancellationToken cancellationToken)
         {
-            await _validator.ValidateAndThrowAsync(request, cancellationToken);
+            var existingUser = await _unitOfWork.Users.GetByUserNameAsync(request.UserName, cancellationToken);
+
+            if (existingUser != null)
+            {
+                throw new AlreadyExistsException("Пользователь с таким логином уже существует.");
+            }
+
+            var normalizedEmail = EmailNormalizer.Normalize(request.Email);
+            existingUser = await _unitOfWork.Users.GetByNormalizedEmailAsync(normalizedEmail, cancellationToken);
+
+            if (existingUser != null)
+            {
+                throw new AlreadyExistsException("Этот Email уже используется.");
+            }
 
             var passwordHash = _passwordHasher.GenerateHash(request.Password);
 

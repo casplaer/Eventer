@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
+using Eventer.Application.Exceptions;
+using Eventer.Application.Interfaces;
 using Eventer.Application.Interfaces.UseCases.Enrollment;
 using Eventer.Contracts.Requests.Enrollments;
 using Eventer.Domain.Interfaces.Repositories;
+using Eventer.Domain.Models;
 using FluentValidation;
 
 namespace Eventer.Application.UseCases.Enrollment
@@ -10,21 +13,30 @@ namespace Eventer.Application.UseCases.Enrollment
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IValidator<UpdateEnrollRequest> _validator;
+        private readonly IUniqueFieldChecker _uniqueFieldChecker;
 
         public UpdateEnrollmentUseCase(
             IUnitOfWork unitOfWork,
             IMapper mapper,
-            IValidator<UpdateEnrollRequest> validator)
+            IUniqueFieldChecker uniqueFieldChecker)
         {
+            _uniqueFieldChecker = uniqueFieldChecker;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _validator = validator;
         }
 
         public async Task ExecuteAsync(UpdateEnrollRequest request, CancellationToken cancellationToken)
         {
-            await _validator.ValidateAndThrowAsync(request, cancellationToken);
+            if (await _unitOfWork.Registrations.GetByIdAsync(request.EnrollmentId, cancellationToken) == null)
+            {
+                throw new NotFoundException("Регистрация с таким ID не найдена.");
+            }
+
+            if (!await _uniqueFieldChecker.IsUniqueAsync<EventRegistration>("Email", request.Email,
+                    request.EnrollmentId))
+            {
+                throw new AlreadyExistsException("Пользователь с таким Email уже зарегистрирован.");
+            }
 
             var enrollmentToUpdate = await _unitOfWork.Registrations.GetByIdAsync(request.EnrollmentId, cancellationToken);
 

@@ -8,21 +8,21 @@ namespace Eventer.Application.UseCases.Auth
     public class GetUserByTokenUseCase : IGetUserByTokenUseCase
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IValidator<User> _validator;
 
         public GetUserByTokenUseCase(
-            IUnitOfWork unitOfWork,
-            IValidator<User> validator)
+            IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _validator = validator;
         }
 
         public async Task<User> Execute(string refreshToken, CancellationToken cancellationToken)
         {
             var user = await _unitOfWork.Users.GetByRefreshTokenAsync(refreshToken, cancellationToken);
 
-            await _validator.ValidateAndThrowAsync(user, cancellationToken);
+            if (user == null || user.RefreshTokenExpiryTime < DateTime.UtcNow)
+            {
+                throw new UnauthorizedAccessException("Пожалуйста, авторизуйтесь ещё раз.");
+            }
 
             return user;
         }

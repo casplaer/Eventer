@@ -1,4 +1,5 @@
-﻿using Eventer.Application.Interfaces.UseCases.Enrollment;
+﻿using Eventer.Application.Exceptions;
+using Eventer.Application.Interfaces.UseCases.Enrollment;
 using Eventer.Domain.Interfaces.Repositories;
 
 namespace Eventer.Application.UseCases.Enrollment
@@ -17,7 +18,7 @@ namespace Eventer.Application.UseCases.Enrollment
             var enrollment = await _unitOfWork.Registrations.GetByIdAsync(id, cancellationToken);
             if (enrollment == null)
             {
-                throw new KeyNotFoundException($"Enrollment with ID {id} not found.");
+                throw new NotFoundException($"Запись с ID {id} не была найдена.");
             }
 
             await _unitOfWork.Registrations.DeleteAsync(enrollment, cancellationToken);

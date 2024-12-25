@@ -37,7 +37,11 @@ namespace Eventer.Infrastructure.Repositories
         public async Task DeleteAsync(T entity, CancellationToken cancellationToken)
         {
             _context.Set<T>().Remove(entity);
-            
+        }
+
+        public async Task RemoveRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken)
+        {
+            _context.Set<T>().RemoveRange(entities);
         }
     }
 }
